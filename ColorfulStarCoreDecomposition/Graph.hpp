@@ -1,0 +1,628 @@
+using namespace std;
+
+int* loc, * tmploc, cvCnt = 0;
+keyvalueLLU* cv;
+class edge
+{
+public:
+	int s;
+	int t;
+};
+
+class iddeg
+{
+public:
+	int id;
+	int degree;
+};
+
+inline int max3(int a, int b, int c) {
+	a = (a > b) ? a : b;
+	return (a > c) ? a : c;
+}
+
+bool cmp(const pair<int, int>& a, const pair<int, int>& b)
+{
+	return a.second > b.second;
+}
+bool IGCmp(const iddeg& a, const iddeg& b)
+{
+	return a.degree == b.degree ? (a.id < b.id) : (a.degree > b.degree);
+}
+
+
+
+class Graph
+{
+public:
+	Graph();
+	Graph(const Graph& obj);
+	~Graph();
+	void readedgelist(string edgelist);
+	void coreDecomposition();
+	void mkGraph();
+	int outLargeClique();
+	bool isEdge(int, int);
+	Graph* mksub(int, ...);
+	//Graph* mksubMark(int*, int, int*);
+	int color(int*);
+	void kClique(int, long long*, long long*);
+	void kCliqueCount(int, long long*, int*, int*, int*, int*, int*, int**, int**, long long*);
+	//bool isEdge(int, int);
+
+	int n;
+	int e;
+	int maxDeg;
+	edge* edges;
+
+	int* deg;
+	int* cd;
+	int* adj;
+	int* coreRank;			//increasing core number order
+	int* coreNum;			//coreNum[i] is the core number of node i.
+	int* bin;
+};
+
+
+
+Graph::Graph(void) {}
+Graph::~Graph(void)
+{
+	if (deg != NULL) delete[] deg;
+	if (cd != NULL) delete[] cd;
+	if (adj != NULL) delete[] adj;
+	if (coreRank != NULL) delete[] coreRank;
+	if (coreNum != NULL) delete[] coreNum;
+	if (bin != NULL) delete[] bin;
+}
+Graph::Graph(const Graph& obj)
+{
+	n = obj.n, e = obj.e, maxDeg = obj.maxDeg, edges = obj.edges;
+	edges = obj.edges;
+
+	if (deg != NULL) delete[] deg;
+	if (obj.deg != NULL) deg = new int[n], memcpy(deg, obj.deg, n * sizeof(int));
+
+	if (cd != NULL) delete[] cd;
+	if (obj.cd != NULL) cd = new int[n + 1], memcpy(cd, obj.cd, (n + 1) * sizeof(int));
+
+	if (adj != NULL) delete[] adj;
+	if (obj.adj != NULL) adj = new int[2 * e], memcpy(adj, obj.adj, 2 * e * sizeof(int));
+
+	if (coreRank != NULL) delete[] coreRank;
+	if (obj.coreRank != NULL) coreRank = new int[n], memcpy(coreRank, obj.coreRank, n * sizeof(int));
+
+	if (coreNum != NULL) delete[] coreNum;
+	if (obj.coreNum != NULL) coreNum = new int[n], memcpy(coreNum, obj.coreNum, n * sizeof(int));
+
+	if (bin != NULL) delete[] bin;
+	if (obj.bin != NULL) bin = new int[maxDeg + 2], memcpy(bin, obj.bin, (maxDeg + 2) * sizeof(int));
+}
+
+void Graph::readedgelist(string edgelist)
+{
+	ifstream file;
+	file.open(edgelist);
+	file >> n >> e;
+	edges = new edge[e];
+	e = 0;
+	while (file >> edges[e].s >> edges[e].t) e++;
+	file.close();
+}
+
+void Graph::mkGraph()
+{
+	deg = new int[n]();
+	cd = new int[n + 1];
+	adj = new int[2 * e];
+	maxDeg = 0;
+	for (int i = 0; i < e; i++)
+	{
+		deg[edges[i].s]++;
+		deg[edges[i].t]++;
+		maxDeg = max3(maxDeg, deg[edges[i].s], deg[edges[i].t]);
+	}
+	cd[0] = 0;
+	for (int i = 1; i < n + 1; i++)
+	{
+		cd[i] = cd[i - 1] + deg[i - 1];
+		deg[i - 1] = 0;
+	}
+
+	for (int i = 0; i < e; i++)
+	{
+		adj[cd[edges[i].s] + deg[edges[i].s]++] = edges[i].t;
+		adj[cd[edges[i].t] + deg[edges[i].t]++] = edges[i].s;
+	}
+
+	for (int i = 0; i < n; i++) sort(adj + cd[i], adj + cd[i] + deg[i]);
+}
+
+bool Graph::isEdge(int a, int b)
+{
+	if (deg[a] > deg[b]) a = a ^ b, b = a ^ b, a = a ^ b;
+	for (int i = cd[a]; i < cd[a] + deg[a]; i++)
+		if (adj[i] == b) return true;
+	return false;
+}
+int Graph::outLargeClique()
+{
+	int CSize = 0;
+	for (int i = n - 1; i >= 0; i--)
+	{
+		int id = coreRank[i];
+		if (coreNum[id] >= CSize)
+		{
+			pair<int, int>* SCore = new pair<int, int>[deg[id]];
+			//int *S = new int[deg[id]], cnt = 0;
+			int cnt = 0, ind = 0;
+			for (int j = cd[id]; j < cd[id] + deg[id]; j++)
+				if (coreNum[adj[j]] >= CSize)
+				{
+					SCore[cnt].first = adj[j];
+					SCore[cnt].second = coreNum[adj[j]];
+					cnt++;
+				}
+			//S[cnt++] = adj[j];
+			sort(SCore, SCore + cnt, cmp);
+			//sort(S, S + cnt, cmp);
+			int* C = new int[deg[id]];
+			for (int j = 0; j < cnt; j++)
+			{
+				int flag = 1;
+				for (int k = 0; k < ind; k++)
+				{
+					if (isEdge(SCore[j].first, C[k]) == false)
+					{
+						flag = 0;
+						break;
+					}
+				}
+				if (flag) C[ind++] = SCore[j].first;
+			}
+			ind++;	//node "id" ?
+			if (ind > CSize) CSize = ind;
+		}
+	}
+	return CSize;
+}
+
+void Graph::coreDecomposition()
+{
+	bin = new int[maxDeg + 2]();
+
+	for (int i = 0; i < n; i++)
+		bin[deg[i]]++;
+
+	int lastBin = bin[0], nowBin;
+	bin[0] = 0;
+	for (int i = 1; i <= maxDeg; i++)
+	{
+		nowBin = lastBin + bin[i - 1];
+		lastBin = bin[i];
+		bin[i] = nowBin;
+	}
+	int* vert = new int[n](), * pos = new int[n](), * tmpDeg = new int[n]();
+	for (int i = 0; i < n; i++)
+	{
+		pos[i] = bin[deg[i]];
+
+		vert[bin[deg[i]]++] = i;
+		tmpDeg[i] = deg[i];
+	}
+
+	bin[0] = 0;
+	for (int i = maxDeg; i >= 1; i--)
+	{
+		bin[i] = bin[i - 1];
+	}
+
+	//int core = 0;
+	int* cNum = new int[n];
+	//int *cNum = (int *)malloc(g->n * sizeof(int));
+	for (int i = 0; i < n; i++)
+	{
+		int id = vert[i], nbr, binFrontId;
+		//if (i == bin[core + 1]) ++core;
+		cNum[id] = tmpDeg[id];
+		for (int i = cd[id]; i < cd[id] + deg[id]; i++)
+		{
+			nbr = adj[i];
+
+			if (tmpDeg[nbr] > tmpDeg[id])
+			{
+				binFrontId = vert[bin[tmpDeg[nbr]]];
+				if (binFrontId != nbr)
+				{
+
+					pos[binFrontId] = pos[nbr];
+					pos[nbr] = bin[tmpDeg[nbr]];
+					vert[bin[tmpDeg[nbr]]] = nbr;
+					vert[pos[binFrontId]] = binFrontId;
+
+				}
+				bin[tmpDeg[nbr]]++;
+				tmpDeg[nbr]--;
+
+			}
+
+		}
+
+	}
+
+	coreNum = cNum;
+
+	coreRank = vert;
+
+	delete[] tmpDeg;
+	delete[] pos;
+}
+
+Graph* Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
+{
+	Graph* sg = new Graph;
+	int* Mark = NULL;
+	va_list ap;
+	va_start(ap, argCnt);
+	//int *sg = va_arg(ap,int *);
+
+	int* nodes = va_arg(ap, int*);
+	int NodeNum = va_arg(ap, int);
+
+	if (argCnt >= 3)
+		Mark = va_arg(ap, int*);
+
+	va_end(ap);
+
+	if (NodeNum < n / 1000)
+	{
+		//printf("NodeNum = %d n = %d\n", NodeNum, n);
+		sg->n = NodeNum, sg->e = 0;
+		int* lab = new int[n], cnt = 0;
+		for (int i = 0; i < sg->n; i++)
+		{
+			tmploc[cnt] = loc[nodes[i]];
+			lab[nodes[i]] = cnt++;
+		}
+		memcpy(loc, tmploc, sizeof(int) * NodeNum);
+
+		if (argCnt >= 3)
+		{
+			cnt = 0;
+			for (int i = 0; i < sg->n; i++) Mark[cnt++] = nodes[i];
+		}
+
+
+		for (int i = 0; i < NodeNum; i++)
+		{
+			for (int j = i + 1; j < NodeNum; j++)
+			{
+				for (int p = cd[nodes[i]]; p < cd[nodes[i] + 1]; p++)
+				{
+					if (adj[p] == nodes[j])
+					{
+						sg->e++;
+					}
+				}
+
+			}
+		}
+		sg->edges = new edge[sg->e];
+		sg->e = 0;
+
+		for (int i = 0; i < NodeNum; i++)
+		{
+			for (int j = i + 1; j < NodeNum; j++)
+			{
+				for (int p = cd[nodes[i]]; p < cd[nodes[i] + 1]; p++)
+				{
+					if (adj[p] == nodes[j])
+					{
+						sg->edges[sg->e].s = lab[nodes[i]];
+						sg->edges[sg->e].t = lab[nodes[j]];
+						sg->e++;
+					}
+				}
+
+			}
+		}
+		delete[] lab;
+		sg->mkGraph();
+		return sg;
+	}
+
+
+
+
+
+	sg->n = NodeNum, sg->e = 0;
+	int* newFg = new int[n]();
+
+	for (int i = 0; i < NodeNum; i++) newFg[nodes[i]] = 1;
+
+	for (int i = 0; i < e; i++)
+		if (newFg[edges[i].s] == 1 && newFg[edges[i].t] == 1) sg->e++;
+
+	//printf("sg.e = %d\n", sg.e);
+	sg->edges = new edge[sg->e];
+
+
+	/*
+	for (int i = 0; i < sg.n; i++)
+	{
+		int ind = cd[nodes[i]];
+		for (int j = i+1; j < sg.n; j++)
+		{
+			while (ind < cd[nodes[i]] + deg[nodes[i]])
+			{
+				if (adj[ind] == nodes[j])
+				{
+					sg.e++;
+					ind++;
+					break;
+				}
+				else if (adj[ind] > nodes[j]) break;
+				ind++;
+			}
+		}
+	}
+	printf("sg.e = %d\n", sg.e);
+	sg.edges.resize(sg.e);
+	*/
+
+	sg->e = 0;
+	int* lab = new int[n], cnt = 0;
+	for (int i = 0; i < sg->n; i++)
+	{
+		tmploc[cnt] = loc[nodes[i]];
+		lab[nodes[i]] = cnt++;
+	}
+	memcpy(loc, tmploc, sizeof(int) * NodeNum);
+
+	if (argCnt >= 3)
+	{
+		cnt = 0;
+		for (int i = 0; i < sg->n; i++) Mark[cnt++] = nodes[i];
+	}
+	//for (int i = 0; i < sg.n; i++) lab[nodes[i]] = -1;
+
+	/*for (int i = 0; i < sg.n; i++)
+	{
+		lab[nodes[i]] = cnt++;
+		mark[cnt] = node[i];
+
+	}
+	*/
+	for (int i = 0; i < e; i++)
+	{
+		if (newFg[edges[i].s] == 1 && newFg[edges[i].t] == 1)
+		{
+			//lab[edges[i].s] = (lab[edges[i].s] == -1 ? (cnt++) : lab[edges[i].s]);
+			//lab[edges[i].t] = (lab[edges[i].t] == -1 ? (cnt++) : lab[edges[i].t]);
+			sg->edges[sg->e].s = lab[edges[i].s];
+			sg->edges[sg->e].t = lab[edges[i].t];
+			sg->e++;
+		}
+	}
+
+
+	/*
+
+	for (int i = 0; i < sg.n; i++)
+	{
+		int ind = cd[nodes[i]];
+		for (int j = i + 1; j < sg.n; j++)
+		{
+			while (ind < cd[nodes[i]] + deg[nodes[i]])
+			{
+				if (adj[ind] == nodes[j])
+				{
+					//cout << "nodes[i] = " << nodes[i] << " nodes[j] = " << nodes[j] << endl;
+					lab[nodes[i]] = (lab[nodes[i]] == -1 ? (++cnt) : lab[nodes[i]]);
+					lab[adj[ind]] = (lab[adj[ind]] == -1 ? (++cnt) : lab[adj[ind]]);
+					sg.edges[sg.e].s = lab[nodes[i]];
+					sg.edges[sg.e].t = lab[adj[ind]];
+					sg.e++;
+					ind++;
+					break;
+				}
+				else if (adj[ind] > nodes[j]) break;
+				ind++;
+			}
+		}
+	}
+
+	*/
+	//printf("sg labeled\n");
+
+	delete[] newFg;
+	delete[] lab;
+	sg->mkGraph();
+	return sg;
+}
+
+int Graph::color(int* color)
+{
+	iddeg* ig = new iddeg[n];
+	for (int i = 0; i < n; i++)
+	{
+		ig[i].id = i;
+		ig[i].degree = deg[i];
+	}
+
+	sort(ig, ig + n, IGCmp);
+
+	//color = new int[n];
+	memset(color, -1, sizeof(int) * n);
+	int* C = new int[(ig[0].degree + 1)]();
+
+	color[ig[0].id] = 0;
+	int colorNum = 1;
+
+	for (int i = 1; i < n; i++)
+	{
+		int tmpDeg = ig[i].degree, tmpid = ig[i].id;
+		for (int j = 0; j < tmpDeg; j++)
+		{
+			int now = adj[cd[tmpid] + j];
+			if (color[now] != -1)
+				C[color[now]] = 1;
+		}
+		for (int j = 0; j < ig[0].degree + 1; j++)
+			if (C[j] == 0)
+			{
+				color[ig[i].id] = j;
+				colorNum = j > colorNum ? j : colorNum;
+				break;
+			}
+
+		for (int j = 0; j < tmpDeg; j++)
+		{
+			int now = adj[cd[tmpid] + j];
+			if (color[now] != -1)
+				C[color[now]] = 0;
+		}
+
+	}
+	//printf("color number = %d\n", colorNum);
+	delete[] ig;
+	delete[] C;
+	return colorNum + 1;
+}
+
+void Graph::kCliqueCount(int l, long long* tol,
+	int* ver, int* lab, int* cdv, int* adjv, int* ns, int** degS, int** subS, long long* cnt)
+{
+	int u, v, w, end;
+	if (l == 2)
+	{
+		int k = _msize(ver) / sizeof(4) - 1;
+		for (int i = 0; i < ns[2]; i++)
+		{//list all edges
+			u = subS[2][i];
+			ver[2] = u;
+			//(*n)+=g->d[2][u];
+			end = cdv[u] + degS[2][u];
+			for (int p = 2; p <= k; p++)
+				cnt[ver[p]] += degS[2][u];
+
+			(*tol) += degS[2][u];
+
+			for (int j = cdv[u]; j < end; j++)
+			{
+				//listing here!!!  // NOTE THAT WE COULD DO (*n)+=g->d[2][u] to be much faster (for counting only); !!!!!!!!!!!!!!!!!!
+				cnt[adjv[j]]++;
+			}
+
+		}
+		return;
+	}
+
+	for (int i = 0; i < ns[l]; i++)
+	{
+		u = subS[l][i];
+		ver[l] = u;
+		//printf("%u %u\n",i,u);
+		ns[l - 1] = 0;
+		end = cdv[u] + degS[l][u];
+		for (int j = cdv[u]; j < end; j++) //relabeling nodes and forming U'.
+		{
+			v = adjv[j];
+			if (lab[v] == l) {
+				lab[v] = l - 1;
+				subS[l - 1][ns[l - 1]++] = v;
+				degS[l - 1][v] = 0;//new degrees
+			}
+		}
+		for (int j = 0; j < ns[l - 1]; j++) //reodering adjacency list and computing new degrees
+		{
+			v = subS[l - 1][j];
+			end = cdv[v] + degS[l][v];
+			for (int k = cdv[v]; k < end; k++)
+			{
+				w = adjv[k];
+				if (lab[w] == l - 1)
+					degS[l - 1][v]++;
+				else
+				{
+					adjv[k--] = adjv[--end];
+					adjv[end] = w;
+				}
+			}
+		}
+
+		kCliqueCount(l - 1, tol, ver, lab, cdv, adjv, ns, degS, subS, cnt);
+
+		for (int j = 0; j < ns[l - 1]; j++) {//restoring labels
+			v = subS[l - 1][j];
+			lab[v] = l;
+		}
+
+	}
+
+
+}
+
+void Graph::kClique(int k, long long* tol, long long* cnt)
+{
+	// ord_core
+	coreDecomposition();
+
+	// relabel
+	int sCore, tCore;
+	for (int i = 0; i < e; i++)
+	{
+		if (coreNum[edges[i].s] > coreNum[edges[i].t])
+		{
+			edges[i].s = edges[i].s ^ edges[i].t;
+			edges[i].t = edges[i].s ^ edges[i].t;
+			edges[i].s = edges[i].s ^ edges[i].t;
+		}
+	}
+
+	// mkspecial
+	int* d, * sub, * lab, * cdv, * adjv, * ns, ** degS, ** subS;
+	int nsg, maxDv;
+	d = new int[n]();
+	for (int i = 0; i < e; i++)	d[edges[i].s]++;
+
+	cdv = new int[n + 1];
+	nsg = 0, maxDv = 0, cdv[0] = 0;
+	sub = new int[n], lab = new int[n];
+
+	for (int i = 1; i < n + 1; i++)
+	{
+		cdv[i] = cdv[i - 1] + d[i - 1];
+		maxDv = (maxDv > d[i - 1]) ? maxDv : d[i - 1];
+		sub[nsg++] = i - 1;
+		d[i - 1] = 0;
+		lab[i - 1] = k;
+	}
+
+	adjv = new int[e];
+	for (int i = 0; i < e; i++)
+		adjv[cdv[edges[i].s] + d[edges[i].s]++] = edges[i].t;
+
+	ns = new int[k + 1];
+	ns[k] = nsg;
+
+	degS = new int* [k + 1], subS = new int* [k + 1];
+
+	for (int i = 2; i < k; i++)
+	{
+		degS[i] = new int[n];
+		subS[i] = new int[maxDv];
+	}
+	degS[k] = d;
+	subS[k] = sub;
+
+	int* ver = new int[k + 1];
+	kCliqueCount(k, tol, ver, lab, cdv, adjv, ns, degS, subS, cnt);
+
+
+	delete[] lab, delete[] cdv, delete[] adjv, delete[] ns;
+
+	for (int i = 2; i <= k; i++)
+		delete[] degS[i], delete[] subS[i];
+	delete[] degS, delete[] subS;
+}
