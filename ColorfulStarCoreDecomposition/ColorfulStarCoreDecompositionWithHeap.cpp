@@ -16,7 +16,7 @@ using namespace std;
 
 #define debug 0
 
-long long kCCN = 0, *tmpCnt, * cntSub;
+long long kCCN = 0, *tmpCnt, *cntSub;
 int* uadj, * uadjt, * Merge, * mark, * oloc;
 
 long long combination(int n, int m)
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
 
 	if (debug)
 	{
-		int setColor[] = {0,3,0,1,2,0,4,3,1,0};
+		int setColor[] = { 0,3,0,1,2,0,4,3,1,0 };
 		color = setColor;
 
 
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	
+
 
 	double** dp = new double* [g.n];
 
@@ -128,6 +128,7 @@ int main(int argc, char** argv)
 	int** CC = new int* [g.n];
 
 	//int** nbrCol = new int* [g.n];
+
 
 	for (int i = 0; i < g.n; i++)
 	{
@@ -148,7 +149,7 @@ int main(int argc, char** argv)
 		NotColor0[0] = 1;
 		for (int c = 1; c <= colorNum_i; c++)
 		{
-			for (int j = k-1; j > 0; j--)
+			for (int j = k - 1; j > 0; j--)
 				NotColor0[j] = NotColor0[j - 1] * CC[i][c] + NotColor0[j];
 		}
 
@@ -212,12 +213,10 @@ int main(int argc, char** argv)
 		//	}
 		//	printf("\n");
 		//if (dp[i][k] < 0)
-			
 		
 		
 		
-		
-		//printf("%d %lf %lf\n", i, dp[i][k-1], ck[cNum][k-1]);
+		//printf("%d %lf %lf\n", i, dp[i][k - 1], ck[cNum][k - 1]);
 
 		//if (dp[i][k] != ck[i][cNum][k])
 			//printf("Not %d colorNum = %d %lf %lf\n", i, colorNum_i, dp[i][k], ck[i][cNum][k]);
@@ -227,12 +226,15 @@ int main(int argc, char** argv)
 
 	t1 = time(NULL);
 
+	bheapLLU* heap = mkheapLLU(g.n, dp, k-1);
+
+	
 
 	if (debug)
 	{
 		for (int i = 0; i < g.n; i++)
 		{
-			printf("id = %d starDegree = %lf\n", i, dp[i][k-1]);
+			printf("id = %d starDegree = %lf\n", i, dp[i][k - 1]);
 		}
 	}
 
@@ -253,6 +255,7 @@ int main(int argc, char** argv)
 	double tolMax = 0;
 	int maxN = 0, maxM = 0;
 
+	keyvalueLLU kv;
 	while (leftN > 0)
 	{
 		times++;
@@ -262,11 +265,14 @@ int main(int argc, char** argv)
 
 		delNodes = 0;
 		double Min = 1e300;
-		for (int i = 0; i < g.n; i++)
-		{
-			if (mark[i] == true) continue;
-			Min = min(Min, dp[i][k-1]);
-		}
+		kv = popminLLU(heap);
+		leftN--;
+		int revId = kv.key;
+		//printf("id = %d value = %lf\n", kv.key, kv.value);
+		Min = min(Min, kv.value);
+
+
+
 		if (Min > tolMax)
 		{
 			tolMax = Min;
@@ -276,129 +282,56 @@ int main(int argc, char** argv)
 		}
 		//tolMax = max(tolMax, Min);
 
-		if (times % 500 == 0)
+		if (times % 50000 == 0)
 			printf("times = %d left nodes = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", times, leftN, tolMax, maxN, maxM, 1.0 * maxM / maxN);
 
 
-		for (int i = 0; i < g.n; i++)
+
+		//////
+		
+		int i = revId;
+		leftM -= g.deg[i];
+		ColofulStarCoreNum[i] = Min;
+
+		for (int j = g.cd[i]; j < g.cd[i] + g.deg[i]; j++)
 		{
-			if (mark[i] == true) continue;
-			if (fabs(dp[i][k-1] - Min) < 1e-9 || dp[i][k - 1] < Min)
+			int nbr = g.adj[j];
+
+			for (int h = g.cd[nbr]; h < g.cd[nbr] + g.deg[nbr]; h++)
 			{
-				mark[i] = true;
-				delNodes++;
-				leftM -= g.deg[i];
-				ColofulStarCoreNum[i] = Min;
-
-				//printf("delNodes = %d\n", delNodes);
-
-				for (int j = g.cd[i]; j < g.cd[i] + g.deg[i]; j++)
+				int hnbr = g.adj[h];
+				if (hnbr == i)
 				{
-					int nbr = g.adj[j];
-
-					for (int h = g.cd[nbr]; h < g.cd[nbr] + g.deg[nbr]; h++)
-					{
-						int hnbr = g.adj[h];
-						if (hnbr == i)
-						{
-							swap(g.adj[h], g.adj[g.cd[nbr] + g.deg[nbr] - 1]);
-							g.deg[nbr]--;
-							break;
-						}
-					}
-
-
-
-
-
-					//for (int ii = 0; ii < colorNum; ii++)
-					//{
-					//	C[ii] = 0;
-					//}
-
-					//int colorNum_i = 0;
-					//for (int h = g.cd[nbr]; h < g.cd[nbr] + g.deg[nbr]; h++)
-					//{
-					//	int hnbr = g.adj[h];
-					//	CC[nbr][color[hnbr]]++;
-					//	colorNum_i = max(colorNum_i, color[hnbr]);
-					//}
-					//colorNum_i++;
-
-					CC[nbr][color[i]]--;
-
-
-					//printf("Min = %lf dp = %lf %d \n", Min, dp[i][k], colorNum_i);
-
-
-
-
-					double lastdp = dp[nbr][k-1];
-					NotColor0[0] = 1;
-					for (int h = 1; h < k; h++)
-					{
-						MustColor0[h] = NotColor0[h - 1] * (CC[nbr][color[i]] + 1);
-
-						NotColor0[h] = dp[nbr][h] - MustColor0[h];
-						//if (nbr == 137729)
-							//printf("%d %lf %lf\n", color[i], MustColor0[h], NotColor0[h] );
-					}
-
-					for (int h = 1; h < k; h++)
-					{
-						MustColor0[h] = NotColor0[h - 1] * CC[nbr][color[i]];
-						dp[nbr][h] = NotColor0[h] + MustColor0[h];
-					}
-
-
-					//----------------------------------
-
-
-					/*
-					for (int j = 0; j < colorNum + 1; j++)
-					{
-						ck[j][0] = 1;
-					}
-					for (int j = 0; j < k + 1; j++)
-						ck[0][j] = 0;
-
-					ck[0][0] = 1;
-
-					int cNum = colorNum;
-
-
-					for (int h = 1; h < cNum + 1; h++)
-						for (int p = 1; p < k + 1; p++)
-							ck[h][p] = ck[h - 1][p - 1] * C[h - 1] + ck[h - 1][p];
-					*/
-
-					//if (nbr == 1)
-					//{
-					//	for (int q = 0; q < colorNum_i; q++)
-					//	{			
-					//		printf("%d ", C[q]);
-
-					//	}
-					//	printf("\n");
-					//	printf("color[i] = %d %lf AAA %d colorNum = %d %lf %lf\n", color[i], lastdp, nbr, colorNum_i, dp[nbr][k], ck[nbr][cNum][k]);
-					//}
-
-					//printf("color[i] = %d %lf AAA %d colorNum = %d %lf %lf\n", color[i], lastdp, nbr, colorNum_i, dp[nbr][k], ck[nbr][cNum][k]);
-
-					//if ( ck[nbr][cNum][k] != dp[nbr][k])
-
-
-					//----------------------------------
-						//if(fabs(ck[cNum][k] - dp[nbr][k])/ck[cNum][k] > 1e-9)
-							//printf("color[i] = %d %lf AAA %d colorNum = %d %lf %lf\n", color[i], lastdp, nbr, colorNum_i, dp[nbr][k], ck[cNum][k]);
-
-
-
+					swap(g.adj[h], g.adj[g.cd[nbr] + g.deg[nbr] - 1]);
+					g.deg[nbr]--;
+					break;
 				}
 			}
+
+
+			CC[nbr][color[i]]--;
+
+
+			double lastdp = dp[nbr][k - 1];
+			NotColor0[0] = 1;
+			for (int h = 1; h < k; h++)
+			{
+				MustColor0[h] = NotColor0[h - 1] * (CC[nbr][color[i]] + 1);
+				NotColor0[h] = dp[nbr][h] - MustColor0[h];
+			}
+
+			for (int h = 1; h < k; h++)
+			{
+				MustColor0[h] = NotColor0[h - 1] * CC[nbr][color[i]];
+				dp[nbr][h] = NotColor0[h] + MustColor0[h];
+			}
+			updateLLU(heap, nbr, dp[nbr][k-1]);
+
 		}
 
 	}
+
+		/////
 
 	printf("End: times = %d left nodes = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", times, leftN, tolMax, maxN, maxM, 1.0 * maxM / maxN);
 
@@ -415,11 +348,9 @@ int main(int argc, char** argv)
 	delete[] MustColor0;
 	//delete[] C;
 
+
 	t2 = time(NULL);
-	printf("- Overall time = %lds\n", t2 - t1);
-
-
-
+	printf("- Overall time = %lds\n", t2-t1);
 
 	printf("The End\n");
 

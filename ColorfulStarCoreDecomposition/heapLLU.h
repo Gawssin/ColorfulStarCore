@@ -4,7 +4,7 @@ class keyvalueLLU
 {
 public:
 	int key;
-	long long value;
+	double value;
 };
 
 class bheapLLU
@@ -77,7 +77,7 @@ inline void insertLLU(bheapLLU * heap, keyvalueLLU kv)
 	bubble_upLLU(heap, heap->n - 1);
 }
 
-inline void updateLLU(bheapLLU * heap, int key, long long delta) 
+inline void updateLLU(bheapLLU * heap, int key, double delta) 
 {
 	int i = heap->pt[key];
 	if (i != -1) {
@@ -97,14 +97,14 @@ inline keyvalueLLU popminLLU(bheapLLU * heap)
 }
 
 //Building the heap structure with (key,value)=(node,k-clique degree) for each node
-bheapLLU* mkheapLLU(long long* nck, int n) 
+bheapLLU* mkheapLLU(int n, double** nck, int h)
 {
 	keyvalueLLU kv;
 	bheapLLU* heap = constructLLU(n);
 	for (int i = 0; i < n; i++) 
 	{
 		kv.key = i;
-		kv.value = nck[i];
+		kv.value = nck[i][h];
 		insertLLU(heap, kv);
 	}
 	return heap;
