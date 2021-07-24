@@ -95,14 +95,22 @@ int main(int argc, char** argv)
 	cout << "Reading edgelist finished!" << endl;
 	g.mkGraph();
 	cout << "mkGraph finished!" << endl;
+	long long tol;
+	long long * cnt = new long long[g.n];
+	g.kClique(k, &tol, cnt);
+
+	printf("%d-clique: %lld\n", k, tol);
+
+	return 0;
+
 	int* color = new int[g.n];
 
 	int colorNum = g.color(color);
 
 	if (debug)
 	{
-		int setColor[] = { 0,3,0,1,2,0,4,3,1,0 };
-		color = setColor;
+		//int setColor[] = { 0,3,0,1,2,0,4,3,1,0 };
+		//color = setColor;
 
 
 		for (int i = 0; i < g.n; i++)
@@ -111,10 +119,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-
-
 	double** dp = new double* [g.n];
-
 
 	//double*** ck = new double** [g.n];
 
@@ -238,7 +243,15 @@ int main(int argc, char** argv)
 		}
 	}
 
-	printf("times 111\n");
+	double maxStarDegree = -1;
+	for (int i = 0; i < g.n; i++)
+	{
+		maxStarDegree = max(maxStarDegree, dp[i][k - 1]);
+		//printf("id = %d starDegree = %lf\n", i, dp[i][k - 1]);
+	}
+
+
+	printf("maxStarDegree = %lf\n", maxStarDegree);
 
 
 
@@ -259,14 +272,9 @@ int main(int argc, char** argv)
 	while (leftN > 0)
 	{
 		times++;
-		leftN -= delNodes;
-		if (leftN < 0) printf("%d %d\n", leftN, delNodes);
-		if (leftN <= 0) break;
-
-		delNodes = 0;
 		double Min = 1e300;
 		kv = popminLLU(heap);
-		leftN--;
+		
 		int revId = kv.key;
 		//printf("id = %d value = %lf\n", kv.key, kv.value);
 		Min = min(Min, kv.value);
@@ -285,7 +293,7 @@ int main(int argc, char** argv)
 		if (times % 50000 == 0)
 			printf("times = %d left nodes = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", times, leftN, tolMax, maxN, maxM, 1.0 * maxM / maxN);
 
-
+		leftN--;
 
 		//////
 		

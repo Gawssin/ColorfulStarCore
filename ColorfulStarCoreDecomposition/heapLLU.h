@@ -96,6 +96,13 @@ inline keyvalueLLU popminLLU(bheapLLU * heap)
 	return min;
 }
 
+
+inline keyvalueLLU topLLU(bheapLLU* heap)
+{
+	keyvalueLLU min = heap->kv[0];
+	return min;
+}
+
 //Building the heap structure with (key,value)=(node,k-clique degree) for each node
 bheapLLU* mkheapLLU(int n, double** nck, int h)
 {

@@ -27,7 +27,7 @@ bool cmp(const pair<int, int>& a, const pair<int, int>& b)
 }
 bool IGCmp(const iddeg& a, const iddeg& b)
 {
-	return a.degree == b.degree ? (a.id < b.id) : (a.degree > b.degree);
+	return a.degree == b.degree ? (a.id > b.id) : (a.degree > b.degree);
 }
 
 
