@@ -95,13 +95,13 @@ int main(int argc, char** argv)
 	cout << "Reading edgelist finished!" << endl;
 	g.mkGraph();
 	cout << "mkGraph finished!" << endl;
-	long long tol;
-	long long * cnt = new long long[g.n];
-	g.kClique(k, &tol, cnt);
+	//long long tol;
+	//long long * cnt = new long long[g.n];
+	//g.kClique(k, &tol, cnt);
 
-	printf("%d-clique: %lld\n", k, tol);
+	//printf("%d-clique: %lld\n", k, tol);
 
-	return 0;
+	//return 0;
 
 	int* color = new int[g.n];
 
