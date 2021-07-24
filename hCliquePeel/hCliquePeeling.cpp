@@ -156,16 +156,96 @@ int main(int argc, char** argv)
 	cout << "mkGraph finished!" << endl;
 	auto t1 = getTime();
 
-	//long long tol;
-	//long long * cnt = new long long[g.n];
-	//g.kClique(h, &tol, cnt);
+	long long tol = 0;
+	long long * cnt = new long long[g.n]();
+	h = 3;
+	g.kClique(h, &tol, cnt);
+	printf("%d-clique: %lld\n", h, tol);
 
 
-	//bheapLLU *cheap = mkheapLLU(g.n, cnt);
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 3;
+	g.kClique(h, &tol, cnt);
+	printf("%d-clique: %lld\n", h, tol);
+
+
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 4;
+	g.kClique(h, &tol, cnt);
+	printf("%d-clique: %lld\n", h, tol);
+
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 5;
+	g.kClique(h, &tol, cnt);
+	printf("%d-clique: %lld\n", h, tol);
+
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 4;
+	g.kClique(h, &tol, cnt);
+	printf("%d-clique: %lld\n", h, tol);
+
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 3;
+	g.kClique(h, &tol, cnt);
+	printf("%d-clique: %lld\n", h, tol);
+
+	bheapLLU<long long> *cheap = mkheapLLU<long long>(g.n, cnt);
+
+	int leftN = g.n;
+	keyvalueLLU<long long> kv;
+
+	double hCliqueDensity = tol/g.n;
+
+	long long leftCliquNum = tol;
+
+	//while (leftN > 0)
+	//{
+	//	kv = popminLLU<long long>(cheap);
+	//	leftN--;
+	//	int i = kv.key;
+	//	leftCliquNum -= cnt[i];
 
 
 
-	//printf("%d-clique: %lld\n", h, tol);
+	//	for (int j = g.cd[i]; j < g.cd[i] + g.deg[i]; j++)
+	//	{
+	//		int nbr = g.adj[j];
+
+	//		for (int p = g.cd[nbr]; p < g.cd[nbr] + g.deg[nbr]; p++)
+	//		{
+	//			int hnbr = g.adj[p];
+	//			if (hnbr == i)
+	//			{
+	//				swap(g.adj[p], g.adj[g.cd[nbr] + g.deg[nbr] - 1]);
+	//				g.deg[nbr]--;
+	//				break;
+	//			}
+	//		}
+
+	//		CC[nbr][color[i]]--;
+
+	//		NotColor[0] = 1;
+	//		for (int p = 1; p < h; p++)
+	//		{
+	//			MustColor[p] = NotColor[p - 1] * (CC[nbr][color[i]] + 1);
+	//			NotColor[p] = dp[nbr][p] - MustColor[p];
+	//		}
+
+	//		for (int p = 1; p < h; p++)
+	//		{
+	//			MustColor[p] = NotColor[p - 1] * CC[nbr][color[i]];
+	//			dp[nbr][p] = NotColor[p] + MustColor[p];
+	//		}
+	//		updateLLU<double>(heap, nbr, dp[nbr][h - 1]);
+	//	}
+
+
+	//	
+	//}
+
+
+
+	
 
 	//return 0;
 

@@ -46,7 +46,7 @@ public:
 	//Graph* mksubMark(int*, int, int*);
 	int color(int*);
 	void kClique(int, long long*, long long*);
-	void kCliqueCount(int, long long*, int*, int*, int*, int*, int*, int**, int**, long long*);
+	void kCliqueCount(int, long long*, int*, int*, int*, int*, int*, int**, int**, long long*, int);
 	//bool isEdge(int, int);
 
 	int n;
@@ -490,19 +490,19 @@ int Graph::color(int* color)
 }
 
 void Graph::kCliqueCount(int l, long long* tol,
-	int* ver, int* lab, int* cdv, int* adjv, int* ns, int** degS, int** subS, long long* cnt)
+	int* ver, int* lab, int* cdv, int* adjv, int* ns, int** degS, int** subS, long long* cnt, int K)
 {
 	int u, v, w, end;
 	if (l == 2)
 	{
-		int k = _msize(ver) / sizeof(4) - 1;
+		//int k = _msize(ver) / sizeof(4) - 1;
 		for (int i = 0; i < ns[2]; i++)
 		{//list all edges
 			u = subS[2][i];
 			ver[2] = u;
 			//(*n)+=g->d[2][u];
 			end = cdv[u] + degS[2][u];
-			for (int p = 2; p <= k; p++)
+			for (int p = 2; p <= K; p++)
 				cnt[ver[p]] += degS[2][u];
 
 			(*tol) += degS[2][u];
@@ -550,7 +550,7 @@ void Graph::kCliqueCount(int l, long long* tol,
 			}
 		}
 
-		kCliqueCount(l - 1, tol, ver, lab, cdv, adjv, ns, degS, subS, cnt);
+		kCliqueCount(l - 1, tol, ver, lab, cdv, adjv, ns, degS, subS, cnt, K);
 
 		for (int j = 0; j < ns[l - 1]; j++) {//restoring labels
 			v = subS[l - 1][j];
@@ -565,17 +565,15 @@ void Graph::kCliqueCount(int l, long long* tol,
 void Graph::kClique(int k, long long* tol, long long* cnt)
 {
 	// ord_core
-	coreDecomposition();
+	//coreDecomposition();
 
 	// relabel
 	int sCore, tCore;
 	for (int i = 0; i < e; i++)
 	{
-		if (coreNum[edges[i].s] > coreNum[edges[i].t])
+		if (deg[edges[i].s] > deg[edges[i].t])
 		{
-			edges[i].s = edges[i].s ^ edges[i].t;
-			edges[i].t = edges[i].s ^ edges[i].t;
-			edges[i].s = edges[i].s ^ edges[i].t;
+			swap(edges[i].s, edges[i].t);
 		}
 	}
 
@@ -616,7 +614,7 @@ void Graph::kClique(int k, long long* tol, long long* cnt)
 	subS[k] = sub;
 
 	int* ver = new int[k + 1];
-	kCliqueCount(k, tol, ver, lab, cdv, adjv, ns, degS, subS, cnt);
+	kCliqueCount(k, tol, ver, lab, cdv, adjv, ns, degS, subS, cnt, k);
 
 
 	delete[] lab, delete[] cdv, delete[] adjv, delete[] ns;

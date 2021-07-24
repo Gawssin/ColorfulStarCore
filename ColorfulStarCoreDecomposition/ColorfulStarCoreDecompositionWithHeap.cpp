@@ -59,7 +59,7 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 {
 	double* tmpDP = new double[g.n];
 	for (int i = 0; i < g.n; i++) tmpDP[i] = dp[i][h - 1];
-	bheapLLU* heap = mkheapLLU(g.n, tmpDP);
+	bheapLLU<double>* heap = mkheapLLU<double>(g.n, tmpDP);
 
 	double maxStarDegree = -1;
 	for (int i = 0; i < g.n; i++)
@@ -75,13 +75,12 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 	
 	double starCoreNum = 0;
 	int times = 0, maxN = 0, maxM = 0;
-	keyvalueLLU kv;
+	keyvalueLLU<double> kv;
 
 	while (leftN > 0)
 	{
 		times++;
-		double Min = 1e300;
-		kv = popminLLU(heap);
+		kv = popminLLU<double>(heap);
 
 		//printf("id = %d value = %lf\n", kv.key, kv.value);
 
