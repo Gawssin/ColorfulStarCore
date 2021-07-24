@@ -57,7 +57,9 @@ void initColStarDegree(Graph &g, double **dp, int h, int colorNum, int *color, i
 
 void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, double * ColofulStarCoreNum)
 {
-	bheapLLU* heap = mkheapLLU(g.n, dp, h - 1);
+	double* tmpDP = new double[g.n];
+	for (int i = 0; i < g.n; i++) tmpDP[i] = dp[i][h - 1];
+	bheapLLU* heap = mkheapLLU(g.n, tmpDP);
 
 	double maxStarDegree = -1;
 	for (int i = 0; i < g.n; i++)
@@ -204,7 +206,7 @@ int main(int argc, char** argv)
 	}
 
 	auto t3 = getTime();
-	printf("- Overall time = %lfs\n", ((double)timeDrt(t2, t3)) / 1e6);
+	printf("- Overall time = %lfs\n", ((double)timeGap(t2, t3)) / 1e6);
 
 	printf("The End\n");
 

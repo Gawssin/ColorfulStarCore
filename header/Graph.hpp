@@ -1,7 +1,6 @@
 using namespace std;
 
 int* loc, * tmploc, cvCnt = 0;
-keyvalueLLU* cv;
 class edge
 {
 public:

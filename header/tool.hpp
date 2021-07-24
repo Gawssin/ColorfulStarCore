@@ -71,7 +71,7 @@ high_resolution_clock::time_point getTime()
 }
 
 
-auto timeDrt(high_resolution_clock::time_point t1, high_resolution_clock::time_point t2)
+auto timeGap(high_resolution_clock::time_point t1, high_resolution_clock::time_point t2)
 {
 	return duration_cast<microseconds>(t2 - t1).count();
 }
