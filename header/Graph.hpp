@@ -133,6 +133,7 @@ void Graph::mkGraph()
 		adj[cd[edges[i].s] + deg[edges[i].s]++] = edges[i].t;
 		adj[cd[edges[i].t] + deg[edges[i].t]++] = edges[i].s;
 	}
+	//delete [] edges;
 
 	for (int i = 0; i < n; i++) sort(adj + cd[i], adj + cd[i] + deg[i]);
 }
@@ -568,7 +569,19 @@ void Graph::kClique(int k, long long* tol, long long* cnt)
 	//coreDecomposition();
 
 	// relabel
-	int sCore, tCore;
+	int* d, * sub, * lab, * cdv, * adjv, * ns, ** degS, ** subS;
+	int nsg, maxDv;
+
+
+	//for (int i = 0; i < n; i++)
+	//{
+
+
+
+
+	//}
+
+
 	for (int i = 0; i < e; i++)
 	{
 		if (deg[edges[i].s] > deg[edges[i].t])
@@ -578,8 +591,7 @@ void Graph::kClique(int k, long long* tol, long long* cnt)
 	}
 
 	// mkspecial
-	int* d, * sub, * lab, * cdv, * adjv, * ns, ** degS, ** subS;
-	int nsg, maxDv;
+	
 	d = new int[n]();
 	for (int i = 0; i < e; i++)	d[edges[i].s]++;
 
