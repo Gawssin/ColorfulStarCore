@@ -573,6 +573,7 @@ void Graph::kClique(int k, long long* tol, long long* cnt)
 	int nsg, maxDv;
 
 	//123
+	//test config proxy
 
 	//for (int i = 0; i < n; i++)
 	//{
