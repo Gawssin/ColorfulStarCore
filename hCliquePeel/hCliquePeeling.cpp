@@ -11,7 +11,7 @@
 #include <time.h>
 #include <cstdarg>
 #include "../header/heapLLU.h"
-#include "../header/Graph.hpp"
+#include "GraphNew.hpp"
 #include "../header/tool.hpp"
 using namespace std;
 
@@ -141,7 +141,31 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 	delete[] MustColor;
 }
 
+void deleteNodes(Graph* g, int* delArray, int size)
+{
 
+	if (size == 1)
+	{
+		int u = delArray[0];
+		for (int j = g->cd[u]; j < g->cd[u] + g->deg[u]; j++)
+		{
+			int v = g->adj[j];
+			for (int k = g->cd[v]; k < g->cd[v] + g->deg[v]; k++)
+			{
+				int w = g->adj[k];
+				if (w == u)
+				{
+					g->adj[k] = g->adj[g->cd[v] + g->deg[v] - 1];
+					g->adj[g->cd[v] + g->deg[v] - 1] = w;
+					g->deg[v]--;
+					break;
+				}
+			}
+		}
+		g->deg[u] = 0;
+		return;
+	}
+}
 
 int main(int argc, char** argv)
 {
@@ -156,6 +180,22 @@ int main(int argc, char** argv)
 	cout << "mkGraph finished!" << endl;
 	auto t1 = getTime();
 
+
+	int* subss = new int[g.n];
+	for (int i = 0; i < g.n; i++) subss[i] = i;
+	g.clique = new Clique(g.n, g.e, 7);
+
+	int delSet[] = {0,8,9,1,2,3,4,5,6,7};
+
+	for (int i = 0; i < 10; i++)
+	{
+		int delId = delSet[i];
+		//deleteNodes(&g, );
+
+	}
+
+
+
 	long long tol = 0;
 	long long * cnt = new long long[g.n]();
 	h = 3;
@@ -168,26 +208,52 @@ int main(int argc, char** argv)
 	g.kClique(h, &tol, cnt);
 	printf("%d-clique: %lld\n", h, tol);
 
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 3;
+	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	printf("New %d-clique: %lld\n", h, tol);
+
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
 	h = 4;
 	g.kClique(h, &tol, cnt);
 	printf("%d-clique: %lld\n", h, tol);
+
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 4;
+	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	printf("New %d-clique: %lld\n", h, tol);
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
 	h = 5;
 	g.kClique(h, &tol, cnt);
 	printf("%d-clique: %lld\n", h, tol);
 
+
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 5;
+	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	printf("New %d-clique: %lld\n", h, tol);
+
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
 	h = 4;
 	g.kClique(h, &tol, cnt);
 	printf("%d-clique: %lld\n", h, tol);
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 4;
+	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	printf("New %d-clique: %lld\n", h, tol);
+
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
 	h = 3;
 	g.kClique(h, &tol, cnt);
 	printf("%d-clique: %lld\n", h, tol);
+
+	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
+	h = 3;
+	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	printf("New %d-clique: %lld\n", h, tol);
 
 	bheapLLU<long long> *cheap = mkheapLLU<long long>(g.n, cnt);
 
