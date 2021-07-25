@@ -572,6 +572,7 @@ void Graph::kClique(int k, long long* tol, long long* cnt)
 	int* d, * sub, * lab, * cdv, * adjv, * ns, ** degS, ** subS;
 	int nsg, maxDv;
 
+	//123
 
 	//for (int i = 0; i < n; i++)
 	//{
