@@ -83,7 +83,7 @@ inline void insertLLU(bheapLLU<T> * heap, keyvalueLLU<T> kv)
 }
 
 template<class T>
-inline void updateLLU(bheapLLU<T> * heap, int key, double delta) 
+inline void updateLLU(bheapLLU<T> * heap, int key, T delta) 
 {
 	int i = heap->pt[key];
 	if (i != -1) {

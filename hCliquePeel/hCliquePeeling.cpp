@@ -185,19 +185,88 @@ int main(int argc, char** argv)
 	for (int i = 0; i < g.n; i++) subss[i] = i;
 	g.clique = new Clique(g.n, g.e, 7);
 
-	int delSet[] = {0,8,9,1,2,3,4,5,6,7};
+	h = 3;
+	
+	long long tol = 0;
+	long long* cnt = new long long[g.n]();
+	g.kClique(h, &tol, cnt);
 
+	bheapLLU<long long>* cHeap = mkheapLLU<long long>(g.n, cnt);
+
+	keyvalueLLU<long long> kv;
+
+	long long curCliqueCore = 0, leftClique = tol;
+	int leftN = g.n, leftM = g.e;
+	int maxCliDenN = 0;	//the number of nodes in the subgraph achiving the largest hclique density;
+	int maxCliDenM = 0;	//the number of edges in the subgraph achiving the largest hclique density;
+	double cliqueDensity = 0.0, curCliqueDensity;
+
+	int* nbrArr = new int[g.maxDeg], nbrNum;
+	long long* nbrCnt = new long long[g.n](), nbrTol;
+
+	while (leftN > 0)
+	{
+		kv = popminLLU<long long>(cHeap);
+		long long cliqueDeg = kv.value;
+
+		//printf("id = %d, cliqueDeg = %lld\n", kv.key, kv.value);
+
+		curCliqueDensity = 1.0 * leftClique / leftN;
+		if (cliqueDensity < curCliqueDensity)
+		{
+			cliqueDensity = curCliqueDensity;
+			maxCliDenN = leftN;
+			maxCliDenM = leftM;
+			//cliqueDensity = 1.0 * leftClique / leftN;
+		}
+
+		int delId = kv.key;
+		nbrNum = 0;
+		for (int i = g.cd[delId]; i < g.cd[delId] + g.deg[delId]; i++)
+		{
+			int adj = g.adj[i];
+			nbrArr[nbrNum++] = adj;
+		}
+		nbrTol = 0;
+		g.kCliqueNew(h-1, &nbrTol, nbrCnt, nbrArr, nbrNum);
+
+
+		leftClique -= nbrTol;
+
+		
+
+		for (int i = 0; i < nbrNum; i++)
+		{
+			int nbrId = nbrArr[i];
+			cnt[nbrId] -= nbrCnt[nbrId];
+			updateLLU(cHeap, nbrId, cnt[nbrId]);
+			//printf("nbrId = %d, nbrCnt = %lld\n",nbrId, nbrCnt[nbrId]);
+		}
+		//printf("------------\n");
+
+
+		for (int i = 0; i < nbrNum; i++)
+			nbrCnt[nbrArr[i]] = 0;
+
+		deleteNodes(&g, &delId, 1);
+		leftN--;
+	}
+
+	printf("maxCliDenN = %d, cliqueDensity = %lf\n", maxCliDenN, cliqueDensity);
+
+	return 0;
+
+
+	
+	int delSet[] = {0,8,9,1,2,3,4,5,6,7};
 	for (int i = 0; i < 10; i++)
 	{
-		int delId = delSet[i];
-		//deleteNodes(&g, );
 
 	}
 
 
 
-	long long tol = 0;
-	long long * cnt = new long long[g.n]();
+
 	h = 3;
 	g.kClique(h, &tol, cnt);
 	printf("%d-clique: %lld\n", h, tol);
@@ -255,14 +324,14 @@ int main(int argc, char** argv)
 	g.kCliqueNew(h, &tol, cnt, subss, g.n);
 	printf("New %d-clique: %lld\n", h, tol);
 
-	bheapLLU<long long> *cheap = mkheapLLU<long long>(g.n, cnt);
+	//bheapLLU<long long> *cheap = mkheapLLU<long long>(g.n, cnt);
 
-	int leftN = g.n;
-	keyvalueLLU<long long> kv;
+	//int leftN = g.n;
+	//keyvalueLLU<long long> kv;
 
-	double hCliqueDensity = tol/g.n;
+	//double hCliqueDensity = tol/g.n;
 
-	long long leftCliquNum = tol;
+	//long long leftCliquNum = tol;
 
 	//while (leftN > 0)
 	//{
