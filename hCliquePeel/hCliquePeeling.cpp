@@ -191,6 +191,8 @@ int main(int argc, char** argv)
 	long long* cnt = new long long[g.n]();
 	g.kClique(h, &tol, cnt);
 
+	printf("Toltal cliques: %lld\n", tol);
+
 	bheapLLU<long long>* cHeap = mkheapLLU<long long>(g.n, cnt);
 
 	keyvalueLLU<long long> kv;
@@ -199,19 +201,51 @@ int main(int argc, char** argv)
 	int leftN = g.n, leftM = g.e;
 	int maxCliDenN = 0;	//the number of nodes in the subgraph achiving the largest hclique density;
 	int maxCliDenM = 0;	//the number of edges in the subgraph achiving the largest hclique density;
-	double cliqueDensity = 0.0, curCliqueDensity;
+
+	int maxCliCoreDenN = 0;	//the number of nodes in the subgraph achiving the largest hclique density;
+	int maxCliCoreDenM = 0;	//the number of edges in the subgraph achiving the largest hclique density;
+	double cliqueDensity = 0.0, curCliqueDensity, cliqueCoreDen = 0.0;
 
 	int* nbrArr = new int[g.maxDeg], nbrNum;
 	long long* nbrCnt = new long long[g.n](), nbrTol;
+	long long maxCliDeg = 0;
 
+	int coreTocore = 0, cntctc = 0;
+
+	//peeling ordering infects maxCliqueDensity.
 	while (leftN > 0)
 	{
+		
 		kv = popminLLU<long long>(cHeap);
 		long long cliqueDeg = kv.value;
-
-		//printf("id = %d, cliqueDeg = %lld\n", kv.key, kv.value);
-
 		curCliqueDensity = 1.0 * leftClique / leftN;
+
+		if (maxCliDeg < cliqueDeg)
+		{
+			cliqueCoreDen = curCliqueDensity;
+			maxCliCoreDenN = leftN;
+			maxCliCoreDenM = leftM;
+
+
+
+			maxCliDeg = cliqueDeg;
+			cntctc += coreTocore;
+			printf("maxCliDeg = %lld -> %lld, coreTocore = %d, \t leftN = %d, \t tolcn = %d\n", maxCliDeg - 1, maxCliDeg, coreTocore, leftN, cntctc);
+			
+			coreTocore = 0;
+		}
+		coreTocore++;
+
+		maxCliDeg = max(maxCliDeg, cliqueDeg);
+
+		//printf("id = %d, cliqueDeg = %lld, leftClique = %lld, leftN = %d\n", kv.key, kv.value, leftClique, leftN);
+
+		
+
+		//if (g.n - leftN < 100)
+			//printf("-------------------------maxCliDeg = %lld, delId = %d, leftN = %d, leftClique: %lld\n", maxCliDeg, kv.key, leftN, leftClique);
+
+
 		if (cliqueDensity < curCliqueDensity)
 		{
 			cliqueDensity = curCliqueDensity;
@@ -252,7 +286,16 @@ int main(int argc, char** argv)
 		leftN--;
 	}
 
+	cntctc += coreTocore;
+	printf("after maxCliDeg = %lld, coreTocore = %d, tolcn = %d\n",  maxCliDeg, coreTocore, cntctc);
+
 	printf("maxCliDenN = %d, cliqueDensity = %lf\n", maxCliDenN, cliqueDensity);
+	printf("maxCliCoreDenN = %d, cliqueCoreDensity = %lf\n", maxCliCoreDenN, cliqueCoreDen);
+
+
+	auto tClique = getTime();
+
+	printf("- Overall time = %lfs\n", ((double)timeGap(t1, tClique)) / 1e6);
 
 	return 0;
 
