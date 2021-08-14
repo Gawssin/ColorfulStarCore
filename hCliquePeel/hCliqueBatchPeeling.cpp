@@ -60,7 +60,7 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 	double* tmpDP = new double[g.n];
 	for (int i = 0; i < g.n; i++) tmpDP[i] = dp[i][h - 1];
 	bheapLLU<double>* heap = mkheapLLU<double>(g.n, tmpDP);
-	
+
 	double maxStarDegree = -1;
 	for (int i = 0; i < g.n; i++)
 	{
@@ -162,7 +162,7 @@ void deleteNodes(Graph* g, int* delArray, int size)
 				}
 			}
 		}
-		g->deg[u] = 0;
+		//g->deg[u] = 0;
 		return;
 	}
 }
@@ -186,7 +186,7 @@ int main(int argc, char** argv)
 	g.clique = new Clique(g.n, g.e, 7);
 
 	h = 3;
-	
+
 	long long tol = 0;
 	long long* cnt = new long long[g.n]();
 	g.kClique(h, &tol, cnt);
@@ -212,11 +212,75 @@ int main(int argc, char** argv)
 
 	int coreTocore = 0, cntctc = 0;
 
+	int* delBatch = new int[g.n](), delSize = 0;
+	int curCliqueCoreNum = -1;
+	bool* delLabel = new bool[g.n]();
 	//peeling ordering infects maxCliqueDensity.
 	while (leftN > 0)
 	{
-		
+		if (topLLU<long long>(cHeap).value > curCliqueCoreNum)
+		{
+
+		}
 		kv = popminLLU<long long>(cHeap);
+		delBatch[delSize++] = kv.key;
+
+
+		while (topLLU<long long>(cHeap).value <= curCliqueCoreNum)
+		{
+			kv = popminLLU<long long>(cHeap);
+			delBatch[delSize++] = kv.key;
+			delLabel[kv.key] = true;
+		}
+
+		for (int i = 0; i < delSize; i++)
+		{
+			deleteNodes(&g, &delBatch[i], 1);
+		}
+		
+		nbrNum = 0;
+		for (int i = 0; i < delSize; i++)
+		{
+			int u = delBatch[i];
+
+			for (int j = g.cd[u]; j < g.cd[u] + g.deg[u]; j++)
+			{
+				int v = g.adj[j];
+				if(delLabel[v] == false) 
+					nbrArr[nbrNum++] = v;
+			}
+			nbrTol = 0;
+			g.kCliqueNew(h - 1, &nbrTol, nbrCnt, nbrArr, nbrNum);
+
+			leftClique -= nbrTol;
+
+
+
+			for (int i = 0; i < nbrNum; i++)
+			{
+				int nbrId = nbrArr[i];
+				cnt[nbrId] -= nbrCnt[nbrId];
+				updateLLU(cHeap, nbrId, cnt[nbrId]);
+				//printf("nbrId = %d, nbrCnt = %lld\n",nbrId, nbrCnt[nbrId]);
+			}
+			//printf("------------\n");
+
+
+			for (int i = 0; i < nbrNum; i++)
+				nbrCnt[nbrArr[i]] = 0;
+
+			deleteNodes(&g, &delId, 1);
+			leftN--;
+
+
+		}
+
+		
+
+
+
+
+
 		long long cliqueDeg = kv.value;
 		curCliqueDensity = 1.0 * leftClique / leftN;
 
@@ -230,8 +294,8 @@ int main(int argc, char** argv)
 
 			maxCliDeg = cliqueDeg;
 			cntctc += coreTocore;
-			//printf("maxCliDeg = %lld -> %lld, coreTocore = %d, \t leftN = %d, \t tolcn = %d\n", maxCliDeg - 1, maxCliDeg, coreTocore, leftN, cntctc);
-			
+			printf("maxCliDeg = %lld -> %lld, coreTocore = %d, \t leftN = %d, \t tolcn = %d\n", maxCliDeg - 1, maxCliDeg, coreTocore, leftN, cntctc);
+
 			coreTocore = 0;
 		}
 		coreTocore++;
@@ -240,7 +304,7 @@ int main(int argc, char** argv)
 
 		//printf("id = %d, cliqueDeg = %lld, leftClique = %lld, leftN = %d\n", kv.key, kv.value, leftClique, leftN);
 
-		
+
 
 		//if (g.n - leftN < 100)
 			//printf("-------------------------maxCliDeg = %lld, delId = %d, leftN = %d, leftClique: %lld\n", maxCliDeg, kv.key, leftN, leftClique);
@@ -262,12 +326,12 @@ int main(int argc, char** argv)
 			nbrArr[nbrNum++] = adj;
 		}
 		nbrTol = 0;
-		g.kCliqueNew(h-1, &nbrTol, nbrCnt, nbrArr, nbrNum);
+		g.kCliqueNew(h - 1, &nbrTol, nbrCnt, nbrArr, nbrNum);
 
 
 		leftClique -= nbrTol;
 
-		
+
 
 		for (int i = 0; i < nbrNum; i++)
 		{
@@ -287,7 +351,7 @@ int main(int argc, char** argv)
 	}
 
 	cntctc += coreTocore;
-	printf("after maxCliDeg = %lld, coreTocore = %d, tolcn = %d\n",  maxCliDeg, coreTocore, cntctc);
+	printf("after maxCliDeg = %lld, coreTocore = %d, tolcn = %d\n", maxCliDeg, coreTocore, cntctc);
 
 	printf("maxCliDenN = %d, cliqueDensity = %lf\n", maxCliDenN, cliqueDensity);
 	printf("maxCliCoreDenN = %d, cliqueCoreDensity = %lf\n", maxCliCoreDenN, cliqueCoreDen);
@@ -300,14 +364,13 @@ int main(int argc, char** argv)
 	return 0;
 
 
-	
-	int delSet[] = {0,8,9,1,2,3,4,5,6,7};
+
+	int delSet[] = { 0,8,9,1,2,3,4,5,6,7 };
 	for (int i = 0; i < 10; i++)
 	{
 
 	}
 
-	//
 
 
 
@@ -424,7 +487,7 @@ int main(int argc, char** argv)
 
 
 
-	
+
 
 	//return 0;
 
