@@ -167,8 +167,10 @@ void deleteNodes(Graph* g, int* delArray, int size)
 	}
 }
 
+
 int main(int argc, char** argv)
 {
+
 	auto t0 = getTime();
 
 	Graph g;
@@ -181,17 +183,35 @@ int main(int argc, char** argv)
 	auto t1 = getTime();
 
 
-	int* subss = new int[g.n];
-	for (int i = 0; i < g.n; i++) subss[i] = i;
-	g.clique = new Clique(g.n, g.e, 7);
+	//g.coreDecomposition();
+	//int largeCliqueSize = g.outLargeClique();
+	//printf("largeCliqueSize: %d\n", largeCliqueSize);
 
-	h = 3;
+
+
+	int* GNodes = new int[g.n];
+	for (int i = 0; i < g.n; i++) GNodes[i] = i;
+	g.clique = new Clique(g.n, g.e, h);
+
 	
 	long long tol = 0;
 	long long* cnt = new long long[g.n]();
-	g.kClique(h, &tol, cnt);
+	//g.kClique(h, &tol, cnt);
+
+	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
+
+
+
+
+
+
+
+
+
 
 	printf("Toltal cliques: %lld\n", tol);
+
+
 
 	bheapLLU<long long>* cHeap = mkheapLLU<long long>(g.n, cnt);
 
@@ -202,8 +222,8 @@ int main(int argc, char** argv)
 	int maxCliDenN = 0;	//the number of nodes in the subgraph achiving the largest hclique density;
 	int maxCliDenM = 0;	//the number of edges in the subgraph achiving the largest hclique density;
 
-	int maxCliCoreDenN = 0;	//the number of nodes in the subgraph achiving the largest hclique density;
-	int maxCliCoreDenM = 0;	//the number of edges in the subgraph achiving the largest hclique density;
+	int maxCliCoreDenN = 0;	//the number of nodes in the maximal hclique core;
+	int maxCliCoreDenM = 0;	//the number of edges in the maximal hclique core;
 	double cliqueDensity = 0.0, curCliqueDensity, cliqueCoreDen = 0.0;
 
 	int* nbrArr = new int[g.maxDeg], nbrNum;
@@ -225,8 +245,6 @@ int main(int argc, char** argv)
 			cliqueCoreDen = curCliqueDensity;
 			maxCliCoreDenN = leftN;
 			maxCliCoreDenM = leftM;
-
-
 
 			maxCliDeg = cliqueDeg;
 			cntctc += coreTocore;
@@ -287,10 +305,10 @@ int main(int argc, char** argv)
 	}
 
 	cntctc += coreTocore;
-	printf("after maxCliDeg = %lld, coreTocore = %d, tolcn = %d\n",  maxCliDeg, coreTocore, cntctc);
+	printf("after coreTocore = %d, tolcn = %d\n", coreTocore, cntctc);
 
 	printf("maxCliDenN = %d, cliqueDensity = %lf\n", maxCliDenN, cliqueDensity);
-	printf("maxCliCoreDenN = %d, cliqueCoreDensity = %lf\n", maxCliCoreDenN, cliqueCoreDen);
+	printf("maxCliDeg = %lld, maxCliCoreDenN = %d, cliqueCoreDensity = %lf\n", maxCliDeg, maxCliCoreDenN, cliqueCoreDen);
 
 
 	auto tClique = getTime();
@@ -323,7 +341,7 @@ int main(int argc, char** argv)
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
 	h = 3;
-	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
 	printf("New %d-clique: %lld\n", h, tol);
 
 
@@ -334,7 +352,7 @@ int main(int argc, char** argv)
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
 	h = 4;
-	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
 	printf("New %d-clique: %lld\n", h, tol);
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
@@ -345,7 +363,7 @@ int main(int argc, char** argv)
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
 	h = 5;
-	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
 	printf("New %d-clique: %lld\n", h, tol);
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
@@ -355,7 +373,7 @@ int main(int argc, char** argv)
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
 	h = 4;
-	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
 	printf("New %d-clique: %lld\n", h, tol);
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
@@ -365,7 +383,7 @@ int main(int argc, char** argv)
 
 	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
 	h = 3;
-	g.kCliqueNew(h, &tol, cnt, subss, g.n);
+	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
 	printf("New %d-clique: %lld\n", h, tol);
 
 	//bheapLLU<long long> *cheap = mkheapLLU<long long>(g.n, cnt);

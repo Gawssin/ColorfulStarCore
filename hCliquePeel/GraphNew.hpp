@@ -232,6 +232,7 @@ int Graph::outLargeClique()
 			}
 			ind++;	//node "id" ?
 			if (ind > CSize) CSize = ind;
+			delete[] SCore;
 		}
 	}
 	return CSize;
@@ -779,6 +780,8 @@ void Graph::kCliqueCountNew(int l, long long* tol, long long* cnt)
 
 
 }
+
+
 
 
 
