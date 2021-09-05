@@ -27,7 +27,7 @@ void initColStarDegree(Graph &g, double **dp, int h, int colorNum, int *color, i
 		int colorNum_i = 0;
 		//int* C = new int[colorNum]();
 		CC[i] = new int[colorNum]();
-		for (int j = g.cd[i]; j < g.cd[i + 1]; j++)
+		for (int j = g.cd[i]; j < g.cd[i] + g.deg[i]; j++)
 		{
 			int nbr = g.adj[j];
 			CC[i][color[nbr]]++;

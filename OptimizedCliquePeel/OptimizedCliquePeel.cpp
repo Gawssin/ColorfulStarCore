@@ -27,7 +27,7 @@ void initColStarDegree(Graph & g, double** dp, int h, int colorNum, int* color, 
 		int colorNum_i = 0;
 		//int* C = new int[colorNum]();
 		CC[i] = new int[colorNum]();
-		for (int j = g.cd[i]; j < g.cd[i + 1]; j++)
+		for (int j = g.cd[i]; j < g.cd[i] + g.deg[i]; j++)
 		{
 			int nbr = g.adj[j];
 			CC[i][color[nbr]]++;
@@ -142,10 +142,22 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 }
 
 
-void ColorfulStarCore(Graph& g, double** dp, int h, int* color, int** CC, long long LB, int &delNum)
+void ColorfulStarCore(Graph& g, double** dp, int h, int* color, int** CC, double LB, int& delNum)
 {
+	printf("LB: %lf\n", LB);
+
 	double* tmpDP = new double[g.n];
 	for (int i = 0; i < g.n; i++) tmpDP[i] = dp[i][h - 1];
+
+	int sdp = 0;
+	for (int i = 0; i < g.n; i++)
+	{
+		if (tmpDP[i] == 0.0) sdp++;
+		//printf("%lf\n", tmpDP[i]);
+	}
+
+	printf("sdp = %d\n", sdp);
+
 	bheapLLU<double>* heap = mkheapLLU<double>(g.n, tmpDP);
 
 	double maxStarDegree = -1;
@@ -317,7 +329,7 @@ int main(int argc, char** argv)
 
 	delNum = 0;
 	long long LB = combination(largeCliqueSize - 1, h - 1);
-	ColorfulStarCore(g, dp, h, color, CC, LB, delNum);
+	ColorfulStarCore(g, dp, h, color, CC, (double)LB, delNum);
 	
 
 	printf("Get ColorfulStar core, delNum: %d\n", delNum);
