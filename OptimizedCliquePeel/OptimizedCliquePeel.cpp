@@ -142,7 +142,7 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 }
 
 
-void ColorfulStarCore(Graph& g, double** dp, int h, int* color, int** CC, double LB, int& delNum)
+void ColorfulStarCore(Graph& g, double** dp, int h, int* color, int** CC, double LB, int& delNum, int &delEdges)
 {
 	printf("LB: %lf\n", LB);
 
@@ -187,6 +187,7 @@ void ColorfulStarCore(Graph& g, double** dp, int h, int* color, int** CC, double
 			break;
 		}
 		delNum++;
+		delEdges += g.deg[kv.key];
 
 		//delNodes[kv.key] = true;
 
@@ -252,7 +253,7 @@ void ColorfulStarCore(Graph& g, double** dp, int h, int* color, int** CC, double
 
 
 
-void deleteNodes(Graph* g, int* delArray, int size)
+int deleteNodes(Graph* g, int* delArray, int size)
 {
 
 	if (size == 1)
@@ -274,8 +275,42 @@ void deleteNodes(Graph* g, int* delArray, int size)
 			}
 		}
 		g->deg[u] = 0;
-		return;
+		return 0;
 	}
+
+	bool* delMark = new bool[g->n]();
+
+	for (int i = 0; i < size; i++) delMark[delArray[i]] = true;
+
+	int interEdges = 0;
+	for (int i = 0; i < size; i++)
+	{
+		int u = delArray[i];
+		for (int j = g->cd[u]; j < g->cd[u] + g->deg[u]; j++)
+		{
+			int v = g->adj[j];
+			if (delMark[v] == true)
+			{
+				interEdges++;
+				continue;
+			}
+			for (int k = g->cd[v]; k < g->cd[v] + g->deg[v]; k++)
+			{
+				int w = g->adj[k];
+				if (w == u)
+				{
+					g->adj[k] = g->adj[g->cd[v] + g->deg[v] - 1];
+					g->adj[g->cd[v] + g->deg[v] - 1] = w;
+					g->deg[v]--;
+					break;
+				}
+			}
+		}
+		g->deg[u] = 0;
+	}
+	cout << "wwwwwwwwwwwwwwwwwwwwwwwwwww size = " << size << endl;
+	delete[] delMark;
+	return interEdges;
 }
 
 
@@ -303,18 +338,24 @@ int main(int argc, char** argv)
 	printf("largeCliqueSize: %d\n", largeCliqueSize);
 
 
-	//int* delArr = new int[g.n], delNum = 0;
-	int delNum = 0;
+	int* delArr = new int[g.n], delNum = 0, delEdges = 0, delDeg = 0;
+	int interEdges;	//the number of edges connecting u, v which both are in delArr.
+	//int delNum = 0, delEdges = 0;
 	for (int i = 0; i < g.n; i++)
 	{
 		if (g.coreNum[i] < largeCliqueSize - 1) 
 		{
-			deleteNodes(&g, &i, 1);
-			delNum++;
+			//delEdges += g.deg[i];
+			//deleteNodes(&g, &i, 1);
+			//delNum++;
+			delArr[delNum++] = i;
+			delDeg += g.deg[i];
 		}
 	}
+	interEdges = deleteNodes(&g, delArr, delNum);
+	delete[] delArr;
 
-	printf("Get w core, delNum: %d\n", delNum);
+	printf("Get w core, delNum: %d, delEdges = %d\n", delNum, delDeg - interEdges / 2);
 
 
 	
@@ -327,14 +368,16 @@ int main(int argc, char** argv)
 	int** CC = new int* [g.n];
 	initColStarDegree(g, dp, h, colorNum, color, CC);
 
-	delNum = 0;
+	delNum = 0, delEdges = 0;;
 	long long LB = combination(largeCliqueSize - 1, h - 1);
-	ColorfulStarCore(g, dp, h, color, CC, (double)LB, delNum);
+	ColorfulStarCore(g, dp, h, color, CC, (double)LB, delNum, delEdges);
 	
 
-	printf("Get ColorfulStar core, delNum: %d\n", delNum);
-	
+	printf("Get ColorfulStar core, delNum: %d, delEdges = %d\n", delNum, delEdges);
 
+
+	
+	
 
 
 
@@ -375,6 +418,7 @@ int main(int argc, char** argv)
 	int coreTocore = 0, cntctc = 0;
 
 	//peeling ordering infects maxCliqueDensity.
+	
 	while (leftN > 0)
 	{
 
@@ -442,9 +486,12 @@ int main(int argc, char** argv)
 		for (int i = 0; i < nbrNum; i++)
 			nbrCnt[nbrArr[i]] = 0;
 
+		
 		deleteNodes(&g, &delId, 1);
 		leftN--;
 	}
+
+	
 
 	cntctc += coreTocore;
 	printf("after coreTocore = %d, tolcn = %d\n", coreTocore, cntctc);
