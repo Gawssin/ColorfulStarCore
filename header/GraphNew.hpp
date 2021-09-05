@@ -81,7 +81,7 @@ public:
 	Graph();
 	Graph(const Graph& obj);
 	~Graph();
-	void readedgelist(string edgelist);
+	void readedgelist(char * edgelist);
 	void coreDecomposition();
 	void mkGraph();
 	int outLargeClique();
@@ -148,8 +148,74 @@ Graph::Graph(const Graph& obj)
 	if (obj.bin != NULL) bin = new int[maxDeg + 2], memcpy(bin, obj.bin, (maxDeg + 2) * sizeof(int));
 }
 
-void Graph::readedgelist(string edgelist)
+class FastRead
 {
+	char* inArr;
+	char* fileName;
+	int index;
+public:
+	FastRead(char* fileName) :fileName(fileName), index(0) {};
+
+	void FileToArr();
+	inline int read();
+	~FastRead();
+};
+
+
+
+void FastRead::FileToArr()
+{
+	FILE* pf = fopen(fileName, "r");
+	fseek(pf, 0, SEEK_END);
+	long lSize = ftell(pf);
+
+	inArr = new char[lSize + 1];
+
+	rewind(pf);
+	fread(inArr, sizeof(char), lSize, pf);
+	fclose(pf);
+	inArr[lSize] = '\0';
+}
+
+
+inline int FastRead::read()
+{
+	int s = 0, w = 1;
+	char ch = inArr[index++];
+	while (ch<'0' || ch>'9') { if (ch == '-')w = -1; ch = inArr[index++]; }
+	while (ch >= '0' && ch <= '9') s = s * 10 + ch - '0', ch = inArr[index++];
+	return s * w;
+}
+
+FastRead::~FastRead()
+{
+	delete[] inArr;
+}
+
+
+void Graph::readedgelist(char* edgelist)
+{
+	FastRead fr(edgelist);
+	fr.FileToArr();
+
+	printf("input finished.\n");
+
+	n = fr.read();
+	e = fr.read();
+
+	int edgeN = e;
+
+	edges = new edge[e];
+	e = 0;
+
+	while (e < edgeN)
+	{
+		edges[e].s = fr.read();
+		edges[e].t = fr.read();
+		e++;
+	}
+
+	/*
 	ifstream file;
 	file.open(edgelist);
 	file >> n >> e;
@@ -157,6 +223,7 @@ void Graph::readedgelist(string edgelist)
 	e = 0;
 	while (file >> edges[e].s >> edges[e].t) e++;
 	file.close();
+	*/
 }
 
 void Graph::mkGraph()
