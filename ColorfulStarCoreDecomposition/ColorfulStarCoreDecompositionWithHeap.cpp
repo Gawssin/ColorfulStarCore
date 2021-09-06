@@ -11,7 +11,7 @@
 #include <time.h>
 #include <cstdarg>
 #include "../header/heapLLU.h"
-#include "../header/Graph.hpp"
+#include "../header/GraphNew.hpp"
 #include "../header/tool.hpp"
 using namespace std;
 
@@ -94,6 +94,11 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 		if (times % 50000 == 0)
 			printf("times = %d left nodes = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", times, leftN, starCoreNum, maxN, maxM, 1.0 * maxM / maxN);
 
+		if (times == 1694615)
+			printf("kv.value = %lf times = %d leftN = %d, leftM = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", kv.value, times, leftN, leftM, starCoreNum, maxN, maxM, 1.0 * maxM / maxN);
+
+		
+
 		//////
 		leftN--;
 		int i = kv.key;
@@ -144,12 +149,24 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 
 int main(int argc, char** argv)
 {
+
+	char* argv1, * argv2;
+	//argv1 = argv[1], argv2 = argv[2];
+
+
+	//--------- readCMD begin
+	readCMD rCMD(argc, argv);
+	argv1 = rCMD.read();
+	argv2 = rCMD.read();
+	//--------- readCMD end
+	
+
 	auto t0 = getTime();
 
 	Graph g;
-	int h = atoi(argv[1]);
-	cout << "Reading edgelist from file " << argv[2] << endl;
-	g.readedgelist(argv[2]);
+	int h = atoi(argv1);
+	cout << "Reading edgelist from file " << argv2 << endl;
+	g.readedgelist(argv2);
 	cout << "Reading edgelist finished!" << endl;
 	g.mkGraph();
 	cout << "mkGraph finished!" << endl;

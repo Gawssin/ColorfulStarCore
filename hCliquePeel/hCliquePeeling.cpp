@@ -171,12 +171,22 @@ void deleteNodes(Graph* g, int* delArray, int size)
 int main(int argc, char** argv)
 {
 
+	char* argv1, * argv2;
+	//argv1 = argv[1], argv2 = argv[2];
+
+
+	//--------- readCMD begin
+	readCMD rCMD(argc, argv);
+	argv1 = rCMD.read();
+	argv2 = rCMD.read();
+	//--------- readCMD end
+
 	auto t0 = getTime();
 
 	Graph g;
-	int h = atoi(argv[1]);
-	cout << "Reading edgelist from file " << argv[2] << endl;
-	g.readedgelist(argv[2]);
+	int h = atoi(argv1);
+	cout << "Reading edgelist from file " << argv2 << endl;
+	g.readedgelist(argv2);
 	cout << "Reading edgelist finished!" << endl;
 	g.mkGraph();
 	cout << "mkGraph finished!" << endl;
@@ -199,15 +209,6 @@ int main(int argc, char** argv)
 	//g.kClique(h, &tol, cnt);
 
 	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
-
-
-
-
-
-
-
-
-
 
 	printf("Toltal cliques: %lld\n", tol);
 
@@ -314,183 +315,6 @@ int main(int argc, char** argv)
 	auto tClique = getTime();
 
 	printf("- Overall time = %lfs\n", ((double)timeGap(t1, tClique)) / 1e6);
-
-	return 0;
-
-
-	
-	int delSet[] = {0,8,9,1,2,3,4,5,6,7};
-	for (int i = 0; i < 10; i++)
-	{
-
-	}
-
-	//
-
-
-
-	h = 3;
-	g.kClique(h, &tol, cnt);
-	printf("%d-clique: %lld\n", h, tol);
-
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 3;
-	g.kClique(h, &tol, cnt);
-	printf("%d-clique: %lld\n", h, tol);
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 3;
-	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
-	printf("New %d-clique: %lld\n", h, tol);
-
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 4;
-	g.kClique(h, &tol, cnt);
-	printf("%d-clique: %lld\n", h, tol);
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 4;
-	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
-	printf("New %d-clique: %lld\n", h, tol);
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 5;
-	g.kClique(h, &tol, cnt);
-	printf("%d-clique: %lld\n", h, tol);
-
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 5;
-	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
-	printf("New %d-clique: %lld\n", h, tol);
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 4;
-	g.kClique(h, &tol, cnt);
-	printf("%d-clique: %lld\n", h, tol);
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 4;
-	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
-	printf("New %d-clique: %lld\n", h, tol);
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 3;
-	g.kClique(h, &tol, cnt);
-	printf("%d-clique: %lld\n", h, tol);
-
-	memset(cnt, 0, sizeof(long long) * g.n); tol = 0;
-	h = 3;
-	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
-	printf("New %d-clique: %lld\n", h, tol);
-
-	//bheapLLU<long long> *cheap = mkheapLLU<long long>(g.n, cnt);
-
-	//int leftN = g.n;
-	//keyvalueLLU<long long> kv;
-
-	//double hCliqueDensity = tol/g.n;
-
-	//long long leftCliquNum = tol;
-
-	//while (leftN > 0)
-	//{
-	//	kv = popminLLU<long long>(cheap);
-	//	leftN--;
-	//	int i = kv.key;
-	//	leftCliquNum -= cnt[i];
-
-
-
-	//	for (int j = g.cd[i]; j < g.cd[i] + g.deg[i]; j++)
-	//	{
-	//		int nbr = g.adj[j];
-
-	//		for (int p = g.cd[nbr]; p < g.cd[nbr] + g.deg[nbr]; p++)
-	//		{
-	//			int hnbr = g.adj[p];
-	//			if (hnbr == i)
-	//			{
-	//				swap(g.adj[p], g.adj[g.cd[nbr] + g.deg[nbr] - 1]);
-	//				g.deg[nbr]--;
-	//				break;
-	//			}
-	//		}
-
-	//		CC[nbr][color[i]]--;
-
-	//		NotColor[0] = 1;
-	//		for (int p = 1; p < h; p++)
-	//		{
-	//			MustColor[p] = NotColor[p - 1] * (CC[nbr][color[i]] + 1);
-	//			NotColor[p] = dp[nbr][p] - MustColor[p];
-	//		}
-
-	//		for (int p = 1; p < h; p++)
-	//		{
-	//			MustColor[p] = NotColor[p - 1] * CC[nbr][color[i]];
-	//			dp[nbr][p] = NotColor[p] + MustColor[p];
-	//		}
-	//		updateLLU<double>(heap, nbr, dp[nbr][h - 1]);
-	//	}
-
-
-	//	
-	//}
-
-
-
-	
-
-	//return 0;
-
-	int* color = new int[g.n];
-	int colorNum = g.color(color);
-	printf("colorNum = %d\n", colorNum);
-
-	if (debug)
-	{
-		//int setColor[] = { 0,3,0,1,2,0,4,3,1,0 };
-		//color = setColor;
-		for (int i = 0; i < g.n; i++)
-		{
-			printf("id = %d color = %d\n", i, color[i]);
-		}
-	}
-
-	double** dp = new double* [g.n];
-	int** CC = new int* [g.n];
-	initColStarDegree(g, dp, h, colorNum, color, CC);
-
-	auto t2 = getTime();
-
-
-	if (debug)
-	{
-		for (int i = 0; i < g.n; i++)
-		{
-			printf("id = %d starDegree = %lf\n", i, dp[i][h - 1]);
-		}
-	}
-
-	double* ColofulStarCoreNum = new double[g.n];
-	ColorfulStarCoreDecomp(g, dp, h, color, CC, ColofulStarCoreNum);
-
-
-	if (debug)
-	{
-		for (int i = 0; i < g.n; i++)
-		{
-			printf("id = %d starDegree = %lf\n", i, ColofulStarCoreNum[i]);
-		}
-	}
-
-	auto t3 = getTime();
-	printf("- Overall time = %lfs\n", ((double)timeGap(t2, t3)) / 1e6);
-
-	printf("The End\n");
 
 	return 0;
 

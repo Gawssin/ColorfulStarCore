@@ -308,7 +308,6 @@ int deleteNodes(Graph* g, int* delArray, int size)
 		}
 		g->deg[u] = 0;
 	}
-	cout << "wwwwwwwwwwwwwwwwwwwwwwwwwww size = " << size << endl;
 	delete[] delMark;
 	return interEdges;
 }
@@ -316,14 +315,24 @@ int deleteNodes(Graph* g, int* delArray, int size)
 
 int main(int argc, char** argv)
 {
+	char* argv1, * argv2;
+	//argv1 = argv[1], argv2 = argv[2];
+
+
+	//--------- readCMD begin
+	readCMD rCMD(argc, argv);
+	argv1 = rCMD.read();
+	argv2 = rCMD.read();
+	//--------- readCMD end
+
 
 	auto t0 = getTime();
 
 	Graph g;
-	int h = atoi(argv[1]);
-	h = 3;
-	cout << "Reading edgelist from file " << argv[2] << endl;
-	g.readedgelist(argv[2]);
+	int h = atoi(argv1);
+	//h = 3;
+	cout << "Reading edgelist from file " << argv2 << endl;
+	g.readedgelist(argv2);
 	cout << "Reading edgelist finished!" << endl;
 	g.mkGraph();
 	cout << "mkGraph finished!" << endl;
@@ -336,6 +345,14 @@ int main(int argc, char** argv)
 	g.coreDecomposition();
 	int largeCliqueSize = g.outLargeClique();
 	printf("largeCliqueSize: %d\n", largeCliqueSize);
+
+	int maxCore = -1;
+	for (int i = 0; i < g.n; i++)
+	{
+		maxCore = max(maxCore, g.coreNum[i]);
+	}
+	printf("maxCore: %d\n", maxCore);
+
 
 
 	int* delArr = new int[g.n], delNum = 0, delEdges = 0, delDeg = 0;

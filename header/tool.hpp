@@ -75,3 +75,32 @@ auto timeGap(high_resolution_clock::time_point t1, high_resolution_clock::time_p
 {
 	return duration_cast<microseconds>(t2 - t1).count();
 }
+
+
+
+
+class readCMD
+{
+	int argc;
+	char** argv;
+	int index;
+	char* arr;
+public:
+	readCMD(int argc, char** argv) : argc(argc), argv(argv), index(0) { arr = new char[1000]; };
+	~readCMD() { delete[] arr; };
+	char * read();
+};
+
+char* readCMD::read()
+{
+	index++;
+	char * cmdArr = new char[1000];
+	FILE* fp;
+	fp = fopen(argv[1], "r");
+	for (int i = 0; i < index; i++)
+	{
+		fscanf(fp, "%s", cmdArr);
+	}
+	fclose(fp);
+	return cmdArr;
+}
