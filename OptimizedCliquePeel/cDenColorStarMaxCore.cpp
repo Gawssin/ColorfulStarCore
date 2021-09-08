@@ -18,8 +18,35 @@ using namespace std;
 
 #define debug 0
 
+void deleteNodes(Graph* g, int* delArray, int size)
+{
+
+	if (size == 1)
+	{
+		int u = delArray[0];
+		for (int j = g->cd[u]; j < g->cd[u] + g->deg[u]; j++)
+		{
+			int v = g->adj[j];
+			for (int k = g->cd[v]; k < g->cd[v] + g->deg[v]; k++)
+			{
+				int w = g->adj[k];
+				if (w == u)
+				{
+					g->adj[k] = g->adj[g->cd[v] + g->deg[v] - 1];
+					g->adj[g->cd[v] + g->deg[v] - 1] = w;
+					g->deg[v]--;
+					break;
+				}
+			}
+		}
+		g->deg[u] = 0;
+		return;
+	}
+}
+
 int main(int argc, char** argv)
 {
+
 	char* argv1, * argv2;
 	//argv1 = argv[1], argv2 = argv[2];
 
@@ -35,76 +62,72 @@ int main(int argc, char** argv)
 
 	Graph g;
 	int h = atoi(argv1);
-	//h = 3;
 	cout << "Reading edgelist from file " << argv2 << endl;
 	g.readedgelist(argv2);
 	cout << "Reading edgelist finished!" << endl;
 	g.mkGraph();
 	cout << "mkGraph finished!" << endl;
-
-	printf("N: %d\tM:%d\n", g.n, g.e);
-
 	auto t1 = getTime();
 
+	//long long tol;
+	//long long * cnt = new long long[g.n];
+	//g.kClique(k, &tol, cnt);
 
-	g.coreDecomposition();
-	int largeCliqueSize = g.outLargeClique();
-	printf("largeCliqueSize: %d\n", largeCliqueSize);
+	//printf("%d-clique: %lld\n", k, tol);
 
-	int maxCore = -1;
-	for (int i = 0; i < g.n; i++)
-	{
-		maxCore = max(maxCore, g.coreNum[i]);
-	}
-	printf("maxCore: %d\n", maxCore);
+	//return 0;
 
-
-
-	int* delArr = new int[g.n], delNum = 0, delEdges = 0, delDeg = 0;
-	int interEdges;	//the number of edges connecting u, v which both are in delArr.
-	//int delNum = 0, delEdges = 0;
-	for (int i = 0; i < g.n; i++)
-	{
-		if (g.coreNum[i] < largeCliqueSize - 1) 
-		{
-			//delEdges += g.deg[i];
-			//deleteNodes(&g, &i, 1);
-			//delNum++;
-			delArr[delNum++] = i;
-			delDeg += g.deg[i];
-		}
-	}
-	interEdges = g.deleteNodes(delArr, delNum);
-	delete[] delArr;
-
-	printf("Get w core, delNum: %d, delEdges = %d\n", delNum, delDeg - interEdges / 2);
-
-
-	
 	int* color = new int[g.n];
 	int colorNum = g.color(color);
 	printf("colorNum = %d\n", colorNum);
 
+	if (debug)
+	{
+		//int setColor[] = { 0,3,0,1,2,0,4,3,1,0 };
+		//color = setColor;
+		for (int i = 0; i < g.n; i++)
+		{
+			printf("id = %d color = %d\n", i, color[i]);
+		}
+	}
 
 	double** dp = new double* [g.n];
 	int** CC = new int* [g.n];
 	initColStarDegree(g, dp, h, colorNum, color, CC);
 
-	delNum = 0, delEdges = 0;;
-	long long LB = combination(largeCliqueSize - 1, h - 1);
-	ColorfulStarCore(g, dp, h, color, CC, (double)LB, delNum, delEdges);
-	
-
-	printf("Get ColorfulStar core, delNum: %d, delEdges = %d\n", delNum, delEdges);
+	auto t2 = getTime();
 
 
-	
-	
+	if (debug)
+	{
+		for (int i = 0; i < g.n; i++)
+		{
+			printf("id = %d starDegree = %lf\n", i, dp[i][h - 1]);
+		}
+	}
+
+	double* ColofulStarCoreNum = new double[g.n];
+	ColorfulStarCoreDecomp(g, dp, h, color, CC, ColofulStarCoreNum);
+
+	if (debug)
+	{
+		for (int i = 0; i < g.n; i++)
+		{
+			printf("id = %d starDegree = %lf\n", i, ColofulStarCoreNum[i]);
+		}
+	}
+
+	auto t3 = getTime();
+	printf("- Overall time = %lfs\n", ((double)timeGap(t2, t3)) / 1e6);
+
+	printf("The End\n");
 
 
 
 
 
+
+	//----------------------------------
 	int* GNodes = new int[g.n];
 	for (int i = 0; i < g.n; i++) GNodes[i] = i;
 	g.clique = new Clique(g.n, g.e, h);
@@ -116,7 +139,7 @@ int main(int argc, char** argv)
 
 	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
 
-	printf("Toltal cliques: %lld\n", tol);
+	printf("Toltal cliques: %lld\th-clique density of colorful h-star maxK core: %lf\n", tol, tol / 162);
 
 
 
@@ -140,9 +163,13 @@ int main(int argc, char** argv)
 	int coreTocore = 0, cntctc = 0;
 
 	//peeling ordering infects maxCliqueDensity.
-	
+
 	while (leftN > 0)
 	{
+		if (leftN == 221)
+		{
+			printf("leftN = %d, leftClique = %d\n", leftN, leftClique);
+		}
 
 		kv = popminLLU<long long>(cHeap);
 		long long cliqueDeg = kv.value;
@@ -208,12 +235,12 @@ int main(int argc, char** argv)
 		for (int i = 0; i < nbrNum; i++)
 			nbrCnt[nbrArr[i]] = 0;
 
-		
+
 		g.deleteNodes(&delId, 1);
 		leftN--;
 	}
 
-	
+
 
 	cntctc += coreTocore;
 	printf("after coreTocore = %d, tolcn = %d\n", coreTocore, cntctc);
@@ -225,6 +252,9 @@ int main(int argc, char** argv)
 	auto tClique = getTime();
 
 	printf("- Overall time = %lfs\n", ((double)timeGap(t1, tClique)) / 1e6);
+
+	return 0;
+
 
 	return 0;
 

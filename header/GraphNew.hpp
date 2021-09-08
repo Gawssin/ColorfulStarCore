@@ -94,6 +94,8 @@ public:
 
 	void kCliqueNew(int k, long long* tol, long long* cnt, int* subg, int size);
 	void kCliqueCountNew(int l, long long* tol, long long* cnt);
+
+	int deleteNodes(int* delArray, int size);
 	//bool isEdge(int, int);
 
 	int n;
@@ -844,8 +846,6 @@ void Graph::kCliqueCountNew(int l, long long* tol, long long* cnt)
 		}
 
 	}
-
-
 }
 
 
@@ -897,4 +897,64 @@ void Graph::kCliqueNew(int k, long long* tol, long long* cnt, int* subg, int siz
 
 	for (int i = 0; i < size; i++) clique->lab[subg[i]] = 0;
 
+}
+
+
+int Graph::deleteNodes(int* delArray, int size)
+{
+
+	if (size == 1)
+	{
+		int u = delArray[0];
+		for (int j = cd[u]; j < cd[u] + deg[u]; j++)
+		{
+			int v = adj[j];
+			for (int k = cd[v]; k < cd[v] + deg[v]; k++)
+			{
+				int w = adj[k];
+				if (w == u)
+				{
+					adj[k] = adj[cd[v] + deg[v] - 1];
+					adj[cd[v] + deg[v] - 1] = w;
+					deg[v]--;
+					break;
+				}
+			}
+		}
+		deg[u] = 0;
+		return 0;
+	}
+
+	bool* delMark = new bool[n]();
+
+	for (int i = 0; i < size; i++) delMark[delArray[i]] = true;
+
+	int interEdges = 0;
+	for (int i = 0; i < size; i++)
+	{
+		int u = delArray[i];
+		for (int j = cd[u]; j < cd[u] + deg[u]; j++)
+		{
+			int v = adj[j];
+			if (delMark[v] == true)
+			{
+				interEdges++;
+				continue;
+			}
+			for (int k = cd[v]; k < cd[v] + deg[v]; k++)
+			{
+				int w = adj[k];
+				if (w == u)
+				{
+					adj[k] = adj[cd[v] + deg[v] - 1];
+					adj[cd[v] + deg[v] - 1] = w;
+					deg[v]--;
+					break;
+				}
+			}
+		}
+		deg[u] = 0;
+	}
+	delete[] delMark;
+	return interEdges;
 }
