@@ -86,7 +86,7 @@ public:
 	void mkGraph();
 	int outLargeClique();
 	bool isEdge(int, int);
-	Graph* mksub(int, ...);
+	Graph mksub(int, ...);
 	//Graph* mksubMark(int*, int, int*);
 	int color(int*);
 	void kClique(int, long long*, long long*);
@@ -378,7 +378,7 @@ void Graph::coreDecomposition()
 	delete[] pos;
 }
 
-Graph* Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
+Graph Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
 {
 	Graph* sg = new Graph;
 	int* Mark = NULL;
@@ -401,17 +401,17 @@ Graph* Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
 		int* lab = new int[n], cnt = 0;
 		for (int i = 0; i < sg->n; i++)
 		{
-			tmploc[cnt] = loc[nodes[i]];
+			//tmploc[cnt] = loc[nodes[i]];
 			lab[nodes[i]] = cnt++;
 		}
-		memcpy(loc, tmploc, sizeof(int) * NodeNum);
+
+		//memcpy(loc, tmploc, sizeof(int) * NodeNum);
 
 		if (argCnt >= 3)
 		{
 			cnt = 0;
 			for (int i = 0; i < sg->n; i++) Mark[cnt++] = nodes[i];
 		}
-
 
 		for (int i = 0; i < NodeNum; i++)
 		{
@@ -448,7 +448,7 @@ Graph* Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
 		}
 		delete[] lab;
 		sg->mkGraph();
-		return sg;
+		return *sg;
 	}
 
 
@@ -558,7 +558,7 @@ Graph* Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
 	delete[] newFg;
 	delete[] lab;
 	sg->mkGraph();
-	return sg;
+	return *sg;
 }
 
 int Graph::color(int* color)

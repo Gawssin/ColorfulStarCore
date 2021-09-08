@@ -37,7 +37,7 @@ void initColStarDegree(Graph& g, double** dp, int h, int colorNum, int* color, i
 	delete[] MustColor0;
 }
 
-void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, double* ColofulStarCoreNum)
+void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, double* ColofulStarCoreNum, double *maxCore = 0, int * maxCoreNum = 0)
 {
 	double* tmpDP = new double[g.n];
 	for (int i = 0; i < g.n; i++) tmpDP[i] = dp[i][h - 1];
@@ -121,6 +121,8 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 		g.deg[i] = 0;
 	}
 
+	*maxCore = starCoreNum;
+	*maxCoreNum = maxN;
 	/////
 	printf("End: times = %d left nodes = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", times, leftN, starCoreNum, maxN, maxM, 1.0 * maxM / maxN);
 
