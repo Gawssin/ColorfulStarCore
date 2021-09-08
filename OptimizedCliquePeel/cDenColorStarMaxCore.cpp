@@ -19,17 +19,8 @@ using namespace std;
 
 #define debug 0
 
-
-int mul(int y, int x = 2)
-{
-	return y * x;
-}
-
 int main(int argc, char** argv)
 {
-	printf("mul = %d\n", mul(3,4));
-
-
 	char* argv1, * argv2;
 	//argv1 = argv[1], argv2 = argv[2];
 
@@ -109,11 +100,8 @@ int main(int argc, char** argv)
 		if (ColofulStarCoreNum[i] >= maxCore)
 			maxCoreNodes[maxCoreNum++] = i;
 	}
-
 	Graph maxCoreSub = g.mksub(2, maxCoreNodes, maxCoreNum);
-
 	maxCoreSub.clique = new Clique(maxCoreSub.n, maxCoreSub.e, h);
-
 	long long tol = 0;
 	long long* cnt = new long long[maxCoreSub.n]();
 	//g.kClique(h, &tol, cnt);
