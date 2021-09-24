@@ -81,12 +81,12 @@ public:
 	Graph();
 	Graph(const Graph& obj);
 	~Graph();
-	void readedgelist(char * edgelist);
+	void readedgelist(char* edgelist);
 	void coreDecomposition();
 	void mkGraph();
 	int outLargeClique();
 	bool isEdge(int, int);
-	Graph &mksub(int, ...);
+	Graph& mksub(int, ...);
 	//Graph* mksubMark(int*, int, int*);
 	int color(int*);
 	void kClique(int, long long*, long long*);
@@ -115,16 +115,22 @@ public:
 
 
 
-Graph::Graph(void) {}
+Graph::Graph(void)
+{
+	edges = NULL;
+	deg = cd = adj = coreRank = coreNum = bin = NULL;
+	clique = NULL;
+}
 Graph::~Graph(void)
 {
+	if (edges != NULL) delete[] edges;
 	if (deg != NULL) delete[] deg;
 	if (cd != NULL) delete[] cd;
 	if (adj != NULL) delete[] adj;
 	if (coreRank != NULL) delete[] coreRank;
 	if (coreNum != NULL) delete[] coreNum;
 	if (bin != NULL) delete[] bin;
-	if (clique != NULL) delete clique;
+	if (clique != NULL) delete[] clique;
 }
 Graph::Graph(const Graph& obj)
 {
@@ -184,7 +190,7 @@ inline int FastRead::read()
 {
 	int s = 0, w = 1;
 	char ch = inArr[index++];
-	while (ch<'0' || ch>'9') { if (ch == '-')w = -1; ch = inArr[index++]; }
+	while (ch < '0' || ch>'9') { if (ch == '-')w = -1; ch = inArr[index++]; }
 	while (ch >= '0' && ch <= '9') s = s * 10 + ch - '0', ch = inArr[index++];
 	return s * w;
 }
@@ -378,7 +384,7 @@ void Graph::coreDecomposition()
 	delete[] pos;
 }
 
-Graph &Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
+Graph& Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
 {
 	Graph* sg = new Graph;
 	int* Mark = NULL;
@@ -709,7 +715,7 @@ void Graph::kClique(int k, long long* tol, long long* cnt)
 	}
 
 	// mkspecial
-	
+
 	d = new int[n]();
 	for (int i = 0; i < e; i++)	d[edges[i].s]++;
 

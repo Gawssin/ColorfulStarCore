@@ -23,13 +23,13 @@ int main(int argc, char** argv)
 {
 
 	char* argv1, * argv2;
-	//argv1 = argv[1], argv2 = argv[2];
+	argv1 = argv[1], argv2 = argv[2];
 
 
 	//--------- readCMD begin
-	readCMD rCMD(argc, argv);
-	argv1 = rCMD.read();
-	argv2 = rCMD.read();
+	//readCMD rCMD(argc, argv);
+	//argv1 = rCMD.read();
+	//argv2 = rCMD.read();
 	//--------- readCMD end
 
 	auto t0 = getTime();
