@@ -121,8 +121,8 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 		g.deg[i] = 0;
 	}
 
-	*maxCore = starCoreNum;
-	*maxCoreNum = maxN;
+	if(maxCore != 0) *maxCore = starCoreNum;
+	if(maxCoreNum != 0) *maxCoreNum = maxN;
 	/////
 	printf("End: times = %d left nodes = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", times, leftN, starCoreNum, maxN, maxM, 1.0 * maxM / maxN);
 

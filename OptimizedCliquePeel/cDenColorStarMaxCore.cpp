@@ -42,6 +42,8 @@ int main(int argc, char** argv)
 	cout << "mkGraph finished!" << endl;
 	auto t1 = getTime();
 
+
+
 	//long long tol;
 	//long long * cnt = new long long[g.n];
 	//g.kClique(k, &tol, cnt);
