@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 
 	srand(unsigned(time(0)));
 
-	int onEdges = 1;
+	int onEdges = 0;
 	if (onEdges)
 	{
 		int* newID = new int[g.n];
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 	int* newNodes = new int[g.n];
 	
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 3; i < 4; i++)
 	{
 		int newN = 0.2 * (i + 1) * g.n;
 		random_shuffle(nodes.begin(), nodes.end());

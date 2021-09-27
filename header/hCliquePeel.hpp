@@ -109,6 +109,6 @@ void hCliquePeeling(Graph& g, int h)
 	cntctc += coreTocore;
 	printf("after coreTocore = %d, tolcn = %d\n", coreTocore, cntctc);
 
-	printf("maxCliDenN = %d, cliqueDensity = %lf\n", maxCliDenN, cliqueDensity);
+	printf("maxCliDenN = %d, maxCliDenM = %d, cliqueDensity = %lf\n", maxCliDenN, maxCliDenM, cliqueDensity);
 	printf("maxCliDeg = %lld, maxCliCoreDenN = %d, cliqueCoreDensity = %lf\n", maxCliDeg, maxCliCoreDenN, cliqueCoreDen);
 }

@@ -56,7 +56,7 @@ Clique::Clique(int n, int e, int k)
 }
 Clique::~Clique(void)
 {
-	printf("delete clique\n");
+	//printf("delete clique\n");
 	if (lab != NULL) delete[] lab;
 	if (dTMP != NULL) delete[] dTMP;
 	if (cdv != NULL) delete[] cdv;
@@ -130,7 +130,7 @@ Graph::~Graph(void)
 	if (coreRank != NULL) delete[] coreRank;
 	if (coreNum != NULL) delete[] coreNum;
 	if (bin != NULL) delete[] bin;
-	if (clique != NULL) delete[] clique;
+	if (clique != NULL) delete clique;
 }
 Graph::Graph(const Graph& obj)
 {
@@ -175,9 +175,10 @@ void FastRead::FileToArr()
 {
 	FILE* pf = fopen(fileName, "r");
 	fseek(pf, 0, SEEK_END);
-	long lSize = ftell(pf);
+	long long lSize = ftell(pf);
 
 	inArr = new char[lSize + 1];
+	printf("lSize = %lld\n", lSize);
 
 	rewind(pf);
 	fread(inArr, sizeof(char), lSize, pf);
@@ -190,6 +191,8 @@ inline int FastRead::read()
 {
 	int s = 0, w = 1;
 	char ch = inArr[index++];
+	if(index >= 1004300000 && index % 10000 == 0)
+	printf("index = %d\n", index);
 	while (ch < '0' || ch>'9') { if (ch == '-')w = -1; ch = inArr[index++]; }
 	while (ch >= '0' && ch <= '9') s = s * 10 + ch - '0', ch = inArr[index++];
 	return s * w;

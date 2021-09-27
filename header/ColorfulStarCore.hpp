@@ -75,7 +75,7 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 
 
 		if (times % 50000 == 0)
-			printf("times = %d left nodes = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", times, leftN, starCoreNum, maxN, maxM, 1.0 * maxM / maxN);
+			printf("times = %d left nodes = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", times, leftN, starCoreNum, maxN, maxM, maxN?(1.0 * maxM / maxN) : 0.0);
 
 		//if (times == g.n - 2)
 		//	printf("kv.value = %lf times = %d leftN = %d, leftM = %d tolMax = %lf maxN = %d maxM = %d density = %lf\n", kv.value, times, leftN, leftM, starCoreNum, maxN, maxM, 1.0 * maxM / maxN);

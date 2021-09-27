@@ -38,7 +38,9 @@ int main(int argc, char** argv)
 	Graph g;
 	int h = atoi(argv1);
 	//h = 3;
+	cout << "h = " << h << endl;
 	cout << "Reading edgelist from file " << argv2 << endl;
+
 	g.readedgelist(argv2);
 	cout << "Reading edgelist finished!" << endl;
 	g.mkGraph();
@@ -78,8 +80,8 @@ int main(int argc, char** argv)
 	}
 	interEdges = g.deleteNodes(delArr, delNum);
 	delete[] delArr;
-
-	printf("Get w core, delNum: %d, delEdges = %d\n", delNum, delDeg - interEdges / 2);
+	int delWEdges = delDeg - interEdges / 2;
+	printf("Get w core, delNum: %d, delEdges = %d\n", delNum, delWEdges);
 
 
 	
@@ -98,6 +100,20 @@ int main(int argc, char** argv)
 	
 
 	printf("Get ColorfulStar core, delNum: %d, delEdges = %d\n", delNum, delEdges);
+
+	printf("Get ColorfulStar core, N: %d, M: %d\n", g.n - delNum, g.e - delWEdges - delEdges);
+
+	//int nowN = 0, nowE = 0;
+	//for (int i = 0; i < g.n; i++)
+	//{
+	//	if (g.deg[i] != 0 )
+	//	{
+	//		nowN++;
+	//		nowE += g.deg[i];
+	//	}
+	//}
+	//printf("Get ColorfulStar core, N: %d, M: %d\n", nowN, nowE);
+
 
 
 	hCliquePeeling(g, h);

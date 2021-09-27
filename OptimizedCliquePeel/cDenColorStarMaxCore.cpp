@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 	//--------- readCMD end
 
 	auto t0 = getTime();
-
+	
 	Graph g;
 	int h = atoi(argv1);
 	cout << "Reading edgelist from file " << argv2 << endl;
@@ -41,8 +41,13 @@ int main(int argc, char** argv)
 	g.mkGraph();
 	cout << "mkGraph finished!" << endl;
 	auto t1 = getTime();
+	
+	Graph* sg = new Graph[5];
+	sg[2].n = 10;
+	Graph& ssg = *(sg + 2);
 
-
+	printf("------------------------ %d\n", (sg + 2)->n);
+	printf("------------------------ %d\n", ssg.n);
 
 	//long long tol;
 	//long long * cnt = new long long[g.n];
@@ -102,7 +107,7 @@ int main(int argc, char** argv)
 		if (ColofulStarCoreNum[i] >= maxCore)
 			maxCoreNodes[maxCoreNum++] = i;
 	}
-	Graph maxCoreSub = g.mksub(2, maxCoreNodes, maxCoreNum);
+	Graph& maxCoreSub = g.mksub(2, maxCoreNodes, maxCoreNum);
 	maxCoreSub.clique = new Clique(maxCoreSub.n, maxCoreSub.e, h);
 	long long tol = 0;
 	long long* cnt = new long long[maxCoreSub.n]();
@@ -116,7 +121,7 @@ int main(int argc, char** argv)
 
 
 	auto t3 = getTime();
-	printf("- Overall time = %lfs\n", ((double)timeGap(t2, t3)) / 1e6);
+	printf("- Overall time = %lfs\n", ((double)timeGap(t1, t3)) / 1e6);
 
 	printf("The End\n");
 

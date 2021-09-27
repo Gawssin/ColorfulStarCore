@@ -94,7 +94,7 @@ int main(int argc, char** argv)
 	}
 
 	auto t3 = getTime();
-	printf("- Overall time = %lfs\n", ((double)timeGap(t2, t3)) / 1e6);
+	printf("- Overall time = %lfs\n", ((double)timeGap(t1, t3)) / 1e6);
 
 	printf("The End\n");
 
