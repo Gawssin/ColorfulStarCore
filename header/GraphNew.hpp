@@ -22,7 +22,9 @@ inline int max3(int a, int b, int c) {
 
 bool cmp(const pair<int, int>& a, const pair<int, int>& b)
 {
-	return a.second > b.second;
+	if (a.second == b.second)
+		return a.first < b.first;
+	else return a.second > b.second;
 }
 bool IGCmp(const iddeg& a, const iddeg& b)
 {
@@ -178,7 +180,7 @@ void FastRead::FileToArr()
 	long long lSize = ftell(pf);
 
 	inArr = new char[lSize + 1];
-	printf("lSize = %lld\n", lSize);
+	//printf("lSize = %lld\n", lSize);
 
 	rewind(pf);
 	fread(inArr, sizeof(char), lSize, pf);
@@ -191,8 +193,6 @@ inline int FastRead::read()
 {
 	int s = 0, w = 1;
 	char ch = inArr[index++];
-	if(index >= 1004300000 && index % 10000 == 0)
-	printf("index = %d\n", index);
 	while (ch < '0' || ch>'9') { if (ch == '-')w = -1; ch = inArr[index++]; }
 	while (ch >= '0' && ch <= '9') s = s * 10 + ch - '0', ch = inArr[index++];
 	return s * w;

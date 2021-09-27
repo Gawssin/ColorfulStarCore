@@ -103,6 +103,9 @@ int main(int argc, char** argv)
 
 	printf("Get ColorfulStar core, N: %d, M: %d\n", g.n - delNum, g.e - delWEdges - delEdges);
 
+	auto reductionTime = getTime();
+	printf("- Reduction time = %lfs\n", ((double)timeGap(t1, reductionTime)) / 1e6);
+
 	//int nowN = 0, nowE = 0;
 	//for (int i = 0; i < g.n; i++)
 	//{
