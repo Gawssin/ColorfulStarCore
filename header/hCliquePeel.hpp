@@ -20,7 +20,12 @@ void hCliquePeeling(Graph& g, int h)
 	keyvalueLLU<long long> kv;
 
 	long long curCliqueCore = 0, leftClique = tol;
-	int leftN = g.n, leftM = g.e;
+	int leftN = g.n, leftM = 0;
+
+	for (int i = 0; i < g.n; i++)
+		leftM += g.deg[i];
+	leftM /= 2;
+
 	int maxCliDenN = 0;	//the number of nodes in the subgraph achiving the largest hclique density;
 	int maxCliDenM = 0;	//the number of edges in the subgraph achiving the largest hclique density;
 
@@ -111,5 +116,5 @@ void hCliquePeeling(Graph& g, int h)
 	printf("after coreTocore = %d, tolcn = %d\n", coreTocore, cntctc);
 
 	printf("maxCliDenN = %d, maxCliDenM = %d, cliqueDensity = %lf\n", maxCliDenN, maxCliDenM, cliqueDensity);
-	printf("maxCliDeg = %lld, maxCliCoreDenN = %d, cliqueCoreDensity = %lf\n", maxCliDeg, maxCliCoreDenN, cliqueCoreDen);
+	printf("maxCliDeg = %lld, maxCliCoreDenN = %d, maxCliCoreDenM = %d, cliqueCoreDensity = %lf\n", maxCliDeg, maxCliCoreDenN, maxCliCoreDenM, cliqueCoreDen);
 }
