@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 	//--------- readCMD end
 
 	auto t0 = getTime();
-	
+
 	Graph g;
 	int h = atoi(argv1);
 	cout << "Reading edgelist from file " << argv2 << endl;
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 	g.mkGraph();
 	cout << "mkGraph finished!" << endl;
 	auto t1 = getTime();
-	
+
 
 	//long long tol;
 	//long long * cnt = new long long[g.n];
@@ -103,81 +103,36 @@ int main(int argc, char** argv)
 	}
 	Graph& maxCoreSub = g.mksub(2, maxCoreNodes, maxCoreNum);
 
-
-	//Graph* tmpG = &maxCoreSub;
-	//while (true)
-	//{
-	//	Graph& g = *tmpG;
-
-	//	//int* color = new int[g.n];
-	//	int colorNum = g.color(color);
-	//	printf("colorNum = %d\n", colorNum);
+	//-------------------
+	printf("subG.n = %d subG.m = %d\n", maxCoreSub.n, maxCoreSub.e);
 
 
-	//	//double** dp = new double* [g.n];
-	//	//int** CC = new int* [g.n];
-	//	initColStarDegree(g, dp, h, colorNum, color, CC);
+	FILE* pf = fopen("C:\\Users\\Gawssin\\Desktop\\Experiments\\dblp-color-core-k-5.csv", "w");
 
-	//	double maxCore = 0;
-	//	int maxCoreNum = 0;
-	//	//double* ColofulStarCoreNum = new double[g.n];
-	//	ColorfulStarCoreDecomp(g, dp, h, color, CC, ColofulStarCoreNum, &maxCore, &maxCoreNum);
+	fprintf(pf, "Source,Target\n");
 
-	//	printf("maxCore = %lf\n", maxCore);
+	for (int i = 0; i < maxCoreSub.e; i++)
+	{
+		fprintf(pf, "%d,%d\n", maxCoreSub.edges[i].s, maxCoreSub.edges[i].t);
+	}
 
-	//	//int* maxCoreNodes = new int[maxCoreNum];
-	//	maxCoreNum = 0;
-	//	for (int i = 0; i < g.n; i++)
-	//	{
-	//		if (ColofulStarCoreNum[i] >= maxCore)
-	//			maxCoreNodes[maxCoreNum++] = i;
-	//	}
-	//	Graph& maxCoreSub = g.mksub(2, maxCoreNodes, maxCoreNum);
-
-	//	tmpG = &maxCoreSub;
-
-	//	//delete &g;
-
-	//}
+	fclose(pf);
 
 
 
 
-	//-------------------------
+	//-------------------
 
-	//FILE* fp;
-	//fp = fopen("F:\\datasets\\ColorCore3.txt", "w");
-	//
-	//fprintf(fp, "%d %d\n", maxCoreSub.n, maxCoreSub.e);
+	//-------------------
+	auto t4 = getTime();
+	printf("startPeeling = %lfs\n", ((double)timeGap(t1, t4)) / 1e6);
 
-	//for (int i = 0; i < maxCoreSub.e; i++)
-	//{
-	//	fprintf(fp, "%d %d\n", maxCoreSub.edges[i].s, maxCoreSub.edges[i].t);
-	//}
-	//fclose(fp);
-	//return 0;
+	hCliquePeeling(maxCoreSub, h);
 
-	//-------------------------
+	auto t5 = getTime();
 
-
-	maxCoreSub.clique = new Clique(maxCoreSub.n, maxCoreSub.e, h);
-	long long tol = 0;
-	long long* cnt = new long long[maxCoreSub.n]();
-	//g.kClique(h, &tol, cnt);
-
-	for (int i = 0; i < maxCoreNum; i++) maxCoreNodes[i] = i;
-
-
-	maxCoreSub.kCliqueNew(h, &tol, cnt, maxCoreNodes, maxCoreNum);
-	printf("Total Clique: %lld\n",tol);
-	printf("The %d-clique density of the colorful %d-star maxK core: %lf\n", h, h, 1.0 * tol / maxCoreNum);
-
-
-	auto t3 = getTime();
-	printf("- Overall time = %lfs\n", ((double)timeGap(t1, t3)) / 1e6);
-
+	printf("- Overall time = %lfs\n", ((double)timeGap(t1, t5)) / 1e6);
 	printf("The End\n");
 
 	return 0;
-
 }

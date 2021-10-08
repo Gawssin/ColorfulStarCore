@@ -11,7 +11,7 @@ void hCliquePeeling(Graph& g, int h)
 
 	g.kCliqueNew(h, &tol, cnt, GNodes, g.n);
 
-	printf("Toltal cliques: %lld\n", tol);
+	printf("Total cliques: %lld\n", tol);
 
 
 
@@ -73,8 +73,9 @@ void hCliquePeeling(Graph& g, int h)
 			maxCliDenM = leftM;
 			//cliqueDensity = 1.0 * leftClique / leftN;
 		}
-
+		
 		int delId = kv.key;
+		leftM -= g.deg[delId];
 		nbrNum = 0;
 		for (int i = g.cd[delId]; i < g.cd[delId] + g.deg[delId]; i++)
 		{
