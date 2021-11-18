@@ -11,7 +11,7 @@
 #include <time.h>
 #include <cstdarg>
 #include "../header/heapLLU.h"
-#include "../header/GraphNew.hpp"
+#include "../header/Graph.hpp"
 #include "../header/tool.hpp"
 #include "../header/hCliquePeel.hpp"
 using namespace std;
