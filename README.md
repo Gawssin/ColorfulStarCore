@@ -17,7 +17,7 @@
 ### To compile
 ```
 $ cd ./ColorfulStarCoreDecomposition/
-$ g++ -O3 -o HStar ColorfulStarCoreDecompositionWithHeap.cpp
+$ g++ -O3 -o HStar ColorfulStarCoreDecomposition.cpp
 ```
 
 ### To run
