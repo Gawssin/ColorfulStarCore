@@ -16,22 +16,10 @@
 #include "../header/hCliquePeel.hpp"
 using namespace std;
 
-#define debug 0
-
-
 int main(int argc, char** argv)
 {
-
 	char* argv1, * argv2;
 	argv1 = argv[1], argv2 = argv[2];
-
-
-	//--------- readCMD begin
-	//readCMD rCMD(argc, argv);
-	//argv1 = rCMD.read();
-	//argv2 = rCMD.read();
-	//--------- readCMD end
-
 	auto t0 = getTime();
 
 	Graph g;
@@ -43,18 +31,11 @@ int main(int argc, char** argv)
 	cout << "mkGraph finished!" << endl;
 	auto t1 = getTime();
 
-
-	//g.coreDecomposition();
-	//int largeCliqueSize = g.outLargeClique();
-	//printf("largeCliqueSize: %d\n", largeCliqueSize);
-
 	hCliquePeeling(g, h);
-
 
 	auto tClique = getTime();
 
 	printf("- Overall time = %lfs\n", ((double)timeGap(t1, tClique)) / 1e6);
 
 	return 0;
-
 }

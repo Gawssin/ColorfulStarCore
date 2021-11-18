@@ -60,6 +60,8 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 	}
 	printf("The maximum colorful h-star degree: %lf\n", maxStarDegree);
 
+
+
 	int leftN = g.n, leftM = g.e;
 
 	double* NotColor = new double[h]();
@@ -68,6 +70,8 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 	double starCoreNum = 0;
 	int times = 0, maxN = 0, maxM = 0;
 	keyvalueLLU<double> kv;
+
+	printf("Times\t\tLeft_Nodes\tMaxCore(N)\tMaxCore(M)\tMaxCore(Density)\tMaxCore(CoreNumber)\n");
 
 	while (leftN > 0)
 	{
@@ -81,8 +85,11 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 			maxM = leftM;
 		}
 
+		//if (times % 100000 == 0)
+			//printf("times = %d\tleft nodes = %-10d\ttolMax = %lf\tmaxN = %d\tmaxM = %d\tdensity = %lf\n", times, leftN, starCoreNum, maxN, maxM, maxN?(1.0 * maxM / maxN) : 0.0);
+
 		if (times % 100000 == 0)
-			printf("times = %d\tleft nodes = %-10d\ttolMax = %lf\tmaxN = %d\tmaxM = %d\tdensity = %lf\n", times, leftN, starCoreNum, maxN, maxM, maxN?(1.0 * maxM / maxN) : 0.0);
+			printf("%d\t\t%d\t\t%d\t\t%d\t\t%lf\t\t%lf\n", times, leftN, maxN, maxM, maxN ? (1.0 * maxM / maxN) : 0.0, starCoreNum);
 
 		leftN--;
 		int i = kv.key;
@@ -138,7 +145,7 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 	if(maxCore != 0) *maxCore = starCoreNum;
 	if(maxCoreNum != 0) *maxCoreNum = maxN;
 
-	printf("End:\ntimes = %d\tleft nodes = %-10d\ttolMax = %lf\tmaxN = %d\tmaxM = %d\tdensity = %lf\n", times, leftN, starCoreNum, maxN, maxM, 1.0 * maxM / maxN);
+	printf("End:\n%d\t\t%d\t\t%d\t\t%d\t\t%lf\t\t%lf\n", times, leftN, maxN, maxM, maxN ? (1.0 * maxM / maxN) : 0.0, starCoreNum);
 
 	delete[] NotColor;
 	delete[] MustColor;
