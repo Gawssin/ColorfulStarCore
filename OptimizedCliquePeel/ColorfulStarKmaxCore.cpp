@@ -21,6 +21,12 @@ int main(int argc, char** argv)
 {
 	char* argv1, * argv2;
 	argv1 = argv[1], argv2 = argv[2];
+	int algoFlag = 0;
+	if (argc >= 4)
+	{
+		if (strcmp(argv[3], "MaxCore") == 0) algoFlag = 0;
+		else if (strcmp(argv[3], "MaxCorePeel") == 0) algoFlag = 1;
+	}
 
 	auto t0 = getTime();
 
@@ -57,12 +63,26 @@ int main(int argc, char** argv)
 	}
 	Graph& maxCoreSub = g.mksub(2, maxCoreNodes, maxCoreNum);
 
-	auto t4 = getTime();
-	printf("startPeeling = %lfs\n", ((double)timeGap(t1, t4)) / 1e6);
+	if (algoFlag == 0)
+	{
+		maxCoreSub.clique = new Clique(maxCoreSub.n, maxCoreSub.e, h);
+		long long tol = 0;
+		long long* cnt = new long long[maxCoreSub.n]();
 
-	hCliquePeeling(maxCoreSub, h);
+		for (int i = 0; i < maxCoreNum; i++) maxCoreNodes[i] = i;
 
-	printf("\nColorful %d-star Kmax Core\nNodes:\t\t%d\nEdges:\t\t%d\nKmax:\t\t%lf\nClique-Density:\t%lf\n\n", h, maxCoreSub.n, maxCoreSub.e, maxCore, 1.0 * (maxCoreSub.clique->cliqueNumber) / maxCoreSub.n);
+		maxCoreSub.kCliqueNew(h, &tol, cnt, maxCoreNodes, maxCoreNum);
+
+		printf("\nColorful %d-star Kmax Core\nNodes:\t\t%d\nEdges:\t\t%d\nKmax:\t\t%lf\nClique-Density:\t%lf\n\n", h, maxCoreSub.n, maxCoreSub.e, maxCore, 1.0 * tol / maxCoreSub.n);
+		delete[] cnt;
+	}
+	else
+	{
+		auto t4 = getTime();
+		printf("startPeeling = %lfs\n", ((double)timeGap(t1, t4)) / 1e6);
+
+		hCliquePeeling(maxCoreSub, h);
+	}
 
 	auto t5 = getTime();
 

@@ -173,8 +173,6 @@ public:
 	~FastRead();
 };
 
-
-
 void FastRead::FileToArr()
 {
 	FILE* pf = fopen(fileName, "r");
@@ -227,16 +225,6 @@ void Graph::readedgelist(char* edgelist)
 		edges[e].t = fr.read();
 		e++;
 	}
-
-	/*
-	ifstream file;
-	file.open(edgelist);
-	file >> n >> e;
-	edges = new edge[e];
-	e = 0;
-	while (file >> edges[e].s >> edges[e].t) e++;
-	file.close();
-	*/
 }
 
 void Graph::mkGraph()
@@ -284,7 +272,6 @@ int Graph::outLargeClique()
 		if (coreNum[id] >= CSize)
 		{
 			pair<int, int>* SCore = new pair<int, int>[deg[id]];
-			//int *S = new int[deg[id]], cnt = 0;
 			int cnt = 0, ind = 0;
 			for (int j = cd[id]; j < cd[id] + deg[id]; j++)
 				if (coreNum[adj[j]] >= CSize)
@@ -293,9 +280,7 @@ int Graph::outLargeClique()
 					SCore[cnt].second = coreNum[adj[j]];
 					cnt++;
 				}
-			//S[cnt++] = adj[j];
 			sort(SCore, SCore + cnt, cmp);
-			//sort(S, S + cnt, cmp);
 			int* C = new int[deg[id]];
 			for (int j = 0; j < cnt; j++)
 			{
@@ -348,13 +333,10 @@ void Graph::coreDecomposition()
 		bin[i] = bin[i - 1];
 	}
 
-	//int core = 0;
 	int* cNum = new int[n];
-	//int *cNum = (int *)malloc(g->n * sizeof(int));
 	for (int i = 0; i < n; i++)
 	{
 		int id = vert[i], nbr, binFrontId;
-		//if (i == bin[core + 1]) ++core;
 		cNum[id] = tmpDeg[id];
 		for (int i = cd[id]; i < cd[id] + deg[id]; i++)
 		{
@@ -374,17 +356,11 @@ void Graph::coreDecomposition()
 				}
 				bin[tmpDeg[nbr]]++;
 				tmpDeg[nbr]--;
-
 			}
-
 		}
-
 	}
-
 	coreNum = cNum;
-
 	coreRank = vert;
-
 	delete[] tmpDeg;
 	delete[] pos;
 }
@@ -407,16 +383,12 @@ Graph& Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
 
 	if (NodeNum < n / 1000)
 	{
-		//printf("NodeNum = %d n = %d\n", NodeNum, n);
 		sg->n = NodeNum, sg->e = 0;
 		int* lab = new int[n], cnt = 0;
 		for (int i = 0; i < sg->n; i++)
 		{
-			//tmploc[cnt] = loc[nodes[i]];
 			lab[nodes[i]] = cnt++;
 		}
-
-		//memcpy(loc, tmploc, sizeof(int) * NodeNum);
 
 		if (argCnt >= 3)
 		{
@@ -462,10 +434,6 @@ Graph& Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
 		return *sg;
 	}
 
-
-
-
-
 	sg->n = NodeNum, sg->e = 0;
 	int* newFg = new int[n]();
 
@@ -474,97 +442,30 @@ Graph& Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
 	for (int i = 0; i < e; i++)
 		if (newFg[edges[i].s] == 1 && newFg[edges[i].t] == 1) sg->e++;
 
-	//printf("sg.e = %d\n", sg.e);
 	sg->edges = new edge[sg->e];
-
-
-	/*
-	for (int i = 0; i < sg.n; i++)
-	{
-		int ind = cd[nodes[i]];
-		for (int j = i+1; j < sg.n; j++)
-		{
-			while (ind < cd[nodes[i]] + deg[nodes[i]])
-			{
-				if (adj[ind] == nodes[j])
-				{
-					sg.e++;
-					ind++;
-					break;
-				}
-				else if (adj[ind] > nodes[j]) break;
-				ind++;
-			}
-		}
-	}
-	printf("sg.e = %d\n", sg.e);
-	sg.edges.resize(sg.e);
-	*/
 
 	sg->e = 0;
 	int* lab = new int[n], cnt = 0;
 	for (int i = 0; i < sg->n; i++)
 	{
-		//tmploc[cnt] = loc[nodes[i]];
 		lab[nodes[i]] = cnt++;
 	}
-	//memcpy(loc, tmploc, sizeof(int) * NodeNum);
 
 	if (argCnt >= 3)
 	{
 		cnt = 0;
 		for (int i = 0; i < sg->n; i++) Mark[cnt++] = nodes[i];
 	}
-	//for (int i = 0; i < sg.n; i++) lab[nodes[i]] = -1;
 
-	/*for (int i = 0; i < sg.n; i++)
-	{
-		lab[nodes[i]] = cnt++;
-		mark[cnt] = node[i];
-
-	}
-	*/
 	for (int i = 0; i < e; i++)
 	{
 		if (newFg[edges[i].s] == 1 && newFg[edges[i].t] == 1)
 		{
-			//lab[edges[i].s] = (lab[edges[i].s] == -1 ? (cnt++) : lab[edges[i].s]);
-			//lab[edges[i].t] = (lab[edges[i].t] == -1 ? (cnt++) : lab[edges[i].t]);
 			sg->edges[sg->e].s = lab[edges[i].s];
 			sg->edges[sg->e].t = lab[edges[i].t];
 			sg->e++;
 		}
 	}
-
-
-	/*
-
-	for (int i = 0; i < sg.n; i++)
-	{
-		int ind = cd[nodes[i]];
-		for (int j = i + 1; j < sg.n; j++)
-		{
-			while (ind < cd[nodes[i]] + deg[nodes[i]])
-			{
-				if (adj[ind] == nodes[j])
-				{
-					//cout << "nodes[i] = " << nodes[i] << " nodes[j] = " << nodes[j] << endl;
-					lab[nodes[i]] = (lab[nodes[i]] == -1 ? (++cnt) : lab[nodes[i]]);
-					lab[adj[ind]] = (lab[adj[ind]] == -1 ? (++cnt) : lab[adj[ind]]);
-					sg.edges[sg.e].s = lab[nodes[i]];
-					sg.edges[sg.e].t = lab[adj[ind]];
-					sg.e++;
-					ind++;
-					break;
-				}
-				else if (adj[ind] > nodes[j]) break;
-				ind++;
-			}
-		}
-	}
-
-	*/
-	//printf("sg labeled\n");
 
 	delete[] newFg;
 	delete[] lab;
@@ -583,7 +484,6 @@ int Graph::color(int* color)
 
 	sort(ig, ig + n, IGCmp);
 
-	//color = new int[n];
 	memset(color, -1, sizeof(int) * n);
 	int* C = new int[(ig[0].degree + 1)]();
 
@@ -615,7 +515,6 @@ int Graph::color(int* color)
 		}
 
 	}
-	//printf("color number = %d\n", colorNum);
 	delete[] ig;
 	delete[] C;
 	return colorNum + 1;
@@ -627,12 +526,10 @@ void Graph::kCliqueCount(int l, long long* tol,
 	int u, v, w, end;
 	if (l == 2)
 	{
-		//int k = _msize(ver) / sizeof(4) - 1;
 		for (int i = 0; i < ns[2]; i++)
 		{//list all edges
 			u = subS[2][i];
 			ver[2] = u;
-			//(*n)+=g->d[2][u];
 			end = cdv[u] + degS[2][u];
 			for (int p = 2; p <= K; p++)
 				cnt[ver[p]] += degS[2][u];
@@ -653,7 +550,6 @@ void Graph::kCliqueCount(int l, long long* tol,
 	{
 		u = subS[l][i];
 		ver[l] = u;
-		//printf("%u %u\n",i,u);
 		ns[l - 1] = 0;
 		end = cdv[u] + degS[l][u];
 		for (int j = cdv[u]; j < end; j++) //relabeling nodes and forming U'.
@@ -688,28 +584,13 @@ void Graph::kCliqueCount(int l, long long* tol,
 			v = subS[l - 1][j];
 			lab[v] = l;
 		}
-
 	}
-
-
 }
-
-
-
-
-
-
 
 void Graph::kClique(int k, long long* tol, long long* cnt)
 {
-	// ord_core
-	//coreDecomposition();
-
-	// relabel
 	int* d, * sub, * lab, * cdv, * adjv, * ns, ** degS, ** subS;
 	int nsg, maxDv;
-
-
 
 	for (int i = 0; i < e; i++)
 	{
@@ -765,9 +646,6 @@ void Graph::kClique(int k, long long* tol, long long* cnt)
 	delete[] degS, delete[] subS;
 }
 
-
-
-
 void Graph::kCliqueCountNew(int l, long long* tol, long long* cnt)
 {
 	int u, v, w, end;
@@ -789,13 +667,11 @@ void Graph::kCliqueCountNew(int l, long long* tol, long long* cnt)
 	}
 	if (l == 2)
 	{
-		//printf("l = 2\n");
 		int k = clique->curK;
 		for (int i = 0; i < clique->ns[2]; i++)
 		{//list all edges
 			u = clique->subS[2][i];
 			clique->ver[2] = u;
-			//(*n)+=g->d[2][u];
 			end = clique->cdv[u] + clique->degS[2][u];
 			for (int p = 2; p <= k; p++)
 				cnt[clique->ver[p]] += clique->degS[2][u];
@@ -816,22 +692,18 @@ void Graph::kCliqueCountNew(int l, long long* tol, long long* cnt)
 	{
 		u = clique->subS[l][i];
 		clique->ver[l] = u;
-		//printf("%d %d\n",i,u);
 		clique->ns[l - 1] = 0;
 		end = clique->cdv[u] + clique->degS[l][u];
-		//printf("dd degS[l][u] = %d\n", degS[l][u]);
 		for (int j = clique->cdv[u]; j < end; j++) //relabeling nodes and forming U'.
 		{
 
 			v = clique->adjv[j];
-			//printf("ddv = %d \n", v);
 			if (clique->lab[v] == l) {
 				clique->lab[v] = l - 1;
 				clique->subS[l - 1][clique->ns[l - 1]++] = v;
 				clique->degS[l - 1][v] = 0;//new degrees
 			}
 		}
-		//printf("dd %d %d\n", i, u);
 		for (int j = 0; j < clique->ns[l - 1]; j++) //reodering adjacency list and computing new degrees
 		{
 			v = clique->subS[l - 1][j];
@@ -848,7 +720,6 @@ void Graph::kCliqueCountNew(int l, long long* tol, long long* cnt)
 				}
 			}
 		}
-		//printf("cc %d %d\n", i, u);
 		kCliqueCountNew(l - 1, tol, cnt);
 
 		for (int j = 0; j < clique->ns[l - 1]; j++) {//restoring labels
@@ -905,7 +776,6 @@ void Graph::kCliqueNew(int k, long long* tol, long long* cnt, int* subg, int siz
 
 int Graph::deleteNodes(int* delArray, int size)
 {
-
 	if (size == 1)
 	{
 		int u = delArray[0];
