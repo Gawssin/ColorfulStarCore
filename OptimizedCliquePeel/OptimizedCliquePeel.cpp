@@ -17,30 +17,18 @@
 #include "../header/hCliquePeel.hpp"
 
 using namespace std;
-
-#define debug 0
-
 int main(int argc, char** argv)
 {
 	char* argv1, * argv2;
 	argv1 = argv[1], argv2 = argv[2];
 
-
-	//--------- readCMD begin
-	//readCMD rCMD(argc, argv);
-	//argv1 = rCMD.read();
-	//argv2 = rCMD.read();
-	//--------- readCMD end
-
-
 	auto t0 = getTime();
 
 	Graph g;
 	int h = atoi(argv1);
-	//h = 3;
-	cout << "h = " << h << endl;
+	
 	cout << "Reading edgelist from file " << argv2 << endl;
-
+	cout << "h = " << h << endl;
 	g.readedgelist(argv2);
 	cout << "Reading edgelist finished!" << endl;
 	g.mkGraph();
@@ -49,7 +37,6 @@ int main(int argc, char** argv)
 	printf("N: %d\tM:%d\n", g.n, g.e);
 
 	auto t1 = getTime();
-
 
 	g.coreDecomposition();
 	int largeCliqueSize = g.outLargeClique();
@@ -63,17 +50,13 @@ int main(int argc, char** argv)
 	printf("maxCore: %d\n", maxCore);
 
 
-
 	int* delArr = new int[g.n], delNum = 0, delEdges = 0, delDeg = 0;
 	int interEdges;	//the number of edges connecting u, v which both are in delArr.
-	//int delNum = 0, delEdges = 0;
+
 	for (int i = 0; i < g.n; i++)
 	{
 		if (g.coreNum[i] < largeCliqueSize - 1) 
 		{
-			//delEdges += g.deg[i];
-			//deleteNodes(&g, &i, 1);
-			//delNum++;
 			delArr[delNum++] = i;
 			delDeg += g.deg[i];
 		}
@@ -81,51 +64,31 @@ int main(int argc, char** argv)
 	interEdges = g.deleteNodes(delArr, delNum);
 	delete[] delArr;
 	int delWEdges = delDeg - interEdges / 2;
-	printf("Get w core, delNum: %d, delEdges = %d\n", delNum, delWEdges);
-
-
-	
 	int* color = new int[g.n];
 	int colorNum = g.color(color);
 	printf("colorNum = %d\n", colorNum);
 
-
 	double** dp = new double* [g.n];
 	int** CC = new int* [g.n];
-	initColStarDegree(g, dp, h, colorNum, color, CC);
+	initColStarDegree(g, dp, h, colorNum, color, CC, 0);
 
 	delNum = 0, delEdges = 0;;
 	long long LB = combination(largeCliqueSize - 1, h - 1);
 	ColorfulStarCore(g, dp, h, color, CC, (double)LB, delNum, delEdges);
 	
+	printf("\nGet ColorfulStar core\nDeleted Nodes:\t%d\nDeleted Edges:\t%d\nLeft Nodes:\t%d\nLeft Edges:\t%d\n\n", 
+		delNum, delEdges, g.n - delNum, g.e - delWEdges - delEdges);
 
-	printf("Get ColorfulStar core, delNum: %d, delEdges = %d\n", delNum, delEdges);
-
-	printf("Get ColorfulStar core, N: %d, M: %d\n", g.n - delNum, g.e - delWEdges - delEdges);
+	//printf("Get ColorfulStar core, N: %d, M: %d\n", g.n - delNum, g.e - delWEdges - delEdges);
 
 	auto reductionTime = getTime();
 	printf("- Reduction time = %lfs\n", ((double)timeGap(t1, reductionTime)) / 1e6);
 
-	//int nowN = 0, nowE = 0;
-	//for (int i = 0; i < g.n; i++)
-	//{
-	//	if (g.deg[i] != 0 )
-	//	{
-	//		nowN++;
-	//		nowE += g.deg[i];
-	//	}
-	//}
-	//printf("Get ColorfulStar core, N: %d, M: %d\n", nowN, nowE);
-
-
-
 	hCliquePeeling(g, h);
-
 
 	auto tClique = getTime();
 
 	printf("- Overall time = %lfs\n", ((double)timeGap(t1, tClique)) / 1e6);
 
 	return 0;
-
 }

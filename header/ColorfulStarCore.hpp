@@ -153,18 +153,10 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 
 void ColorfulStarCore(Graph& g, double** dp, int h, int* color, int** CC, double LB, int& delNum, int& delEdges)
 {
-	printf("LB: %lf\n", LB);
+	printf("Lower Bound: %lf\n", LB);
 
 	double* tmpDP = new double[g.n];
 	for (int i = 0; i < g.n; i++) tmpDP[i] = dp[i][h - 1];
-
-	int sdp = 0;
-	for (int i = 0; i < g.n; i++)
-	{
-		if (tmpDP[i] == 0.0) sdp++;
-	}
-
-	printf("sdp = %d\n", sdp);
 
 	bheapLLU<double>* heap = mkheapLLU<double>(g.n, tmpDP);
 

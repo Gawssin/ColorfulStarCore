@@ -36,6 +36,7 @@ class Clique
 {
 public:
 	int* lab, * cdv, * adjv, * ns, ** degS, ** subS, * ver, * dTMP, maxK, curK;
+	long long cliqueNumber;
 	Clique(int n, int e, int k);
 	~Clique();
 };
@@ -55,6 +56,7 @@ Clique::Clique(int n, int e, int k)
 		subS[i] = new int[n];
 	}
 	maxK = k;
+	cliqueNumber = 0;
 }
 Clique::~Clique(void)
 {
@@ -857,12 +859,6 @@ void Graph::kCliqueCountNew(int l, long long* tol, long long* cnt)
 	}
 }
 
-
-
-
-
-
-
 //cd, adj, deg, subS(subgraph node set), ns(subgraph node size)
 void Graph::kCliqueNew(int k, long long* tol, long long* cnt, int* subg, int size)
 {
@@ -878,7 +874,6 @@ void Graph::kCliqueNew(int k, long long* tol, long long* cnt, int* subg, int siz
 			if (clique->lab[v] == k) clique->degS[k][u]++;
 		}
 	}
-	//printf("fff\n");
 	for (int i = 0; i < size; i++)
 	{
 		int u = subg[i];
@@ -897,15 +892,14 @@ void Graph::kCliqueNew(int k, long long* tol, long long* cnt, int* subg, int siz
 			}
 		}
 	}
-	//printf("ggg\n");
+
 	for (int i = 0; i < size; i++) clique->degS[k][subg[i]] = clique->dTMP[subg[i]];
 
 	clique->ns[k] = nsg;
 	clique->curK = k;
 	kCliqueCountNew(k, tol, cnt);
-
+	if(size == n) clique->cliqueNumber = *tol;
 	for (int i = 0; i < size; i++) clique->lab[subg[i]] = 0;
-
 }
 
 
