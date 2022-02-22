@@ -49,22 +49,6 @@ int merging(int s, int* list1, int s1, int* list2, int s2, int* list3)
 }
 
 
-long long Binary(double left, double right, Graph& g, double* uBd)
-{
-	//int left = 0, right = n;      //解的范围初始为(0,n],不包含0                             
-	while (left + 1 < right)
-	{
-		long long mid = (right + left) / 2;
-		if (1)//check()
-		{
-			right = mid;          //修正解的范围(left,right]
-		}
-		else
-			left = mid;
-	}
-	return right;                //最后left + 1 = right
-}
-
 high_resolution_clock::time_point getTime()
 {
 	return high_resolution_clock::now();
@@ -88,13 +72,13 @@ class readCMD
 public:
 	readCMD(int argc, char** argv) : argc(argc), argv(argv), index(0) { arr = new char[1000]; };
 	~readCMD() { delete[] arr; };
-	char * read();
+	char* read();
 };
 
 char* readCMD::read()
 {
 	index++;
-	char * cmdArr = new char[1000];
+	char* cmdArr = new char[1000];
 	FILE* fp;
 	fp = fopen(argv[1], "r");
 	for (int i = 0; i < index; i++)
@@ -103,4 +87,37 @@ char* readCMD::read()
 	}
 	fclose(fp);
 	return cmdArr;
+}
+
+void _int128_print(__int128 x)
+{
+	if (!x) return;
+	if (x < 0) putchar('-'), x = -x;
+	_int128_print(x / 10);
+	putchar(x % 10 + '0');
+}
+
+
+char* _int128_to_str(__int128 x)
+{
+	if (x / 10 == 0)
+	{
+		char* str = new char[40]();
+		if (x < 0)
+		{
+			str[0] = '-';
+			str[1] = -x + '0';
+		}
+		else
+		{
+			str[0] = x + '0';
+		}
+		return str;
+	}
+
+	char* str = _int128_to_str(x / 10);
+
+	if (x < 0) x = -x;
+	str[strlen(str)] = x % 10 + '0';
+	return str;
 }

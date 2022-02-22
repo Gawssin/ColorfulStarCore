@@ -27,8 +27,8 @@ int main(int argc, char** argv)
 	{
 		basicFlag = 1;
 	}
-	cout << "Version: " << ( basicFlag ? "Basic (HStarDP)":"Advanced (HStarCD)" ) << endl << endl;
-	
+	cout << "Version: " << (basicFlag ? "Basic (HStarDP)" : "Advanced (HStarCD)") << endl << endl;
+
 	auto t0 = getTime();
 
 	Graph g;
@@ -44,9 +44,9 @@ int main(int argc, char** argv)
 	int colorNum = g.color(color);
 	printf("Total number of colors: %d\n", colorNum);
 
-	double** dp = new double* [g.n];
+	__int128** dp = new __int128* [g.n];
 	int** CC = new int* [g.n];
-	double* ColofulStarCoreNum = new double[g.n];
+	__int128* ColofulStarCoreNum = new __int128[g.n];
 
 	initColStarDegree(g, dp, h, colorNum, color, CC, basicFlag);
 	ColorfulStarCoreDecomp(g, dp, h, color, CC, ColofulStarCoreNum, colorNum, basicFlag);

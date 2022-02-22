@@ -769,7 +769,7 @@ void Graph::kCliqueNew(int k, long long* tol, long long* cnt, int* subg, int siz
 	clique->ns[k] = nsg;
 	clique->curK = k;
 	kCliqueCountNew(k, tol, cnt);
-	if(size == n) clique->cliqueNumber = *tol;
+	if (size == n) clique->cliqueNumber = *tol;
 	for (int i = 0; i < size; i++) clique->lab[subg[i]] = 0;
 }
 

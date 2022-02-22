@@ -57,7 +57,7 @@ void hCliquePeeling(Graph& g, int h)
 			maxCliDenN = leftN;
 			maxCliDenM = leftM;
 		}
-		
+
 		int delId = kv.key;
 		leftM -= g.deg[delId];
 		nbrNum = 0;

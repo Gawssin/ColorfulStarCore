@@ -43,15 +43,15 @@ int main(int argc, char** argv)
 	int colorNum = g.color(color);
 	printf("colorNum = %d\n", colorNum);
 
-	double** dp = new double* [g.n];
+	__int128** dp = new __int128* [g.n];
 	int** CC = new int* [g.n];
 	initColStarDegree(g, dp, h, colorNum, color, CC, 0);
 
 	auto t2 = getTime();
 
-	double maxCore = 0;
+	__int128 maxCore = 0;
 	int maxCoreNum = 0;
-	double* ColofulStarCoreNum = new double[g.n];
+	__int128* ColofulStarCoreNum = new __int128[g.n];
 	ColorfulStarCoreDecomp(g, dp, h, color, CC, ColofulStarCoreNum, colorNum, 0, &maxCore, &maxCoreNum);
 
 	int* maxCoreNodes = new int[maxCoreNum];
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 
 		maxCoreSub.kCliqueNew(h, &tol, cnt, maxCoreNodes, maxCoreNum);
 
-		printf("\nColorful %d-star Kmax Core\nNodes:\t\t%d\nEdges:\t\t%d\nKmax:\t\t%lf\nClique-Density:\t%lf\n\n", h, maxCoreSub.n, maxCoreSub.e, maxCore, 1.0 * tol / maxCoreSub.n);
+		printf("\nColorful %d-star Kmax Core\nNodes:\t\t%d\nEdges:\t\t%d\nKmax:\t\t%s\nClique-Density:\t%lf\n\n", h, maxCoreSub.n, maxCoreSub.e, _int128_to_str(maxCore), 1.0 * tol / maxCoreSub.n);
 		delete[] cnt;
 	}
 	else

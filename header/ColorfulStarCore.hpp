@@ -1,11 +1,11 @@
 
-void initColStarDegree(Graph& g, double** dp, int h, int colorNum, int* color, int** CC, int basicFlag)
+void initColStarDegree(Graph& g, __int128** dp, int h, int colorNum, int* color, int** CC, int basicFlag)
 {
-	double* NotColor0 = new double[h]();
-	double* MustColor0 = new double[h]();
+	__int128* NotColor0 = new __int128[h]();
+	__int128* MustColor0 = new __int128[h]();
 	for (int i = 0; i < g.n; i++)
 	{
-		dp[i] = new double[h];
+		dp[i] = new __int128[h];
 		int colorNum_i = 0;
 		//int* C = new int[colorNum]();
 		CC[i] = new int[colorNum]();
@@ -47,36 +47,36 @@ void initColStarDegree(Graph& g, double** dp, int h, int colorNum, int* color, i
 	delete[] MustColor0;
 }
 
-void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, double* ColofulStarCoreNum, int colorNum, int basicFlag, double *maxCore = 0, int * maxCoreNum = 0)
+void ColorfulStarCoreDecomp(Graph& g, __int128** dp, int h, int* color, int** CC, __int128* ColofulStarCoreNum, int colorNum, int basicFlag, __int128* maxCore = 0, int* maxCoreNum = 0)
 {
-	double* tmpDP = new double[g.n];
+	__int128* tmpDP = new __int128[g.n];
 	for (int i = 0; i < g.n; i++) tmpDP[i] = dp[i][h - 1];
-	bheapLLU<double>* heap = mkheapLLU<double>(g.n, tmpDP);
+	bheapLLU<__int128>* heap = mkheapLLU<__int128>(g.n, tmpDP);
 
-	double maxStarDegree = -1;
+	__int128 maxStarDegree = -1;
 	for (int i = 0; i < g.n; i++)
 	{
 		maxStarDegree = max(maxStarDegree, dp[i][h - 1]);
 	}
-	printf("The maximum colorful h-star degree: %lf\n", maxStarDegree);
+	printf("The maximum colorful h-star degree: %s\n", _int128_to_str(maxStarDegree));
 
 
 
 	int leftN = g.n, leftM = g.e;
 
-	double* NotColor = new double[h]();
-	double* MustColor = new double[h]();
+	__int128* NotColor = new __int128[h]();
+	__int128* MustColor = new __int128[h]();
 
-	double starCoreNum = 0;
+	__int128 starCoreNum = 0;
 	int times = 0, maxN = 0, maxM = 0;
-	keyvalueLLU<double> kv;
+	keyvalueLLU<__int128> kv;
 
 	printf("Times\t\tLeft_Nodes\tMaxCore(N)\tMaxCore(M)\tMaxCore(Density)\tMaxCore(CoreNumber)\n");
 
 	while (leftN > 0)
 	{
 		times++;
-		kv = popminLLU<double>(heap);
+		kv = popminLLU<__int128>(heap);
 
 		if (kv.value > starCoreNum)
 		{
@@ -89,7 +89,7 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 			//printf("times = %d\tleft nodes = %-10d\ttolMax = %lf\tmaxN = %d\tmaxM = %d\tdensity = %lf\n", times, leftN, starCoreNum, maxN, maxM, maxN?(1.0 * maxM / maxN) : 0.0);
 
 		if (times % 100000 == 0)
-			printf("%d\t\t%d\t\t%d\t\t%d\t\t%lf\t\t%lf\n", times, leftN, maxN, maxM, maxN ? (1.0 * maxM / maxN) : 0.0, starCoreNum);
+			printf("%d\t\t%d\t\t%d\t\t%d\t\t%lf\t\t%s\n", times, leftN, maxN, maxM, maxN ? (1.0 * maxM / maxN) : 0.0, _int128_to_str(starCoreNum));
 
 		leftN--;
 		int i = kv.key;
@@ -142,45 +142,45 @@ void ColorfulStarCoreDecomp(Graph& g, double** dp, int h, int* color, int** CC, 
 		g.deg[i] = 0;
 	}
 
-	if(maxCore != 0) *maxCore = starCoreNum;
-	if(maxCoreNum != 0) *maxCoreNum = maxN;
+	if (maxCore != 0)* maxCore = starCoreNum;
+	if (maxCoreNum != 0)* maxCoreNum = maxN;
 
-	printf("End:\n%d\t\t%d\t\t%d\t\t%d\t\t%lf\t\t%lf\n", times, leftN, maxN, maxM, maxN ? (1.0 * maxM / maxN) : 0.0, starCoreNum);
+	printf("End:\n%d\t\t%d\t\t%d\t\t%d\t\t%lf\t\t%s\n", times, leftN, maxN, maxM, maxN ? (1.0 * maxM / maxN) : 0.0, _int128_to_str(starCoreNum));
 
 	delete[] NotColor;
 	delete[] MustColor;
 }
 
-void ColorfulStarCore(Graph& g, double** dp, int h, int* color, int** CC, double LB, int& delNum, int& delEdges)
+void ColorfulStarCore(Graph& g, __int128** dp, int h, int* color, int** CC, __int128 LB, int& delNum, int& delEdges)
 {
-	printf("Lower Bound: %lf\n", LB);
+	printf("Lower Bound: %s\n", _int128_to_str(LB));
 
-	double* tmpDP = new double[g.n];
+	__int128* tmpDP = new __int128[g.n];
 	for (int i = 0; i < g.n; i++) tmpDP[i] = dp[i][h - 1];
 
-	bheapLLU<double>* heap = mkheapLLU<double>(g.n, tmpDP);
+	bheapLLU<__int128>* heap = mkheapLLU<__int128>(g.n, tmpDP);
 
-	double maxStarDegree = -1;
+	__int128 maxStarDegree = -1;
 	for (int i = 0; i < g.n; i++)
 	{
 		maxStarDegree = max(maxStarDegree, dp[i][h - 1]);
 	}
-	printf("maxStarDegree = %lf\n", maxStarDegree);
+	printf("maxStarDegree = %s\n", _int128_to_str(maxStarDegree));
 
 	int leftN = g.n, leftM = g.e;
 
-	double* NotColor = new double[h]();
-	double* MustColor = new double[h]();
+	__int128* NotColor = new __int128[h]();
+	__int128* MustColor = new __int128[h]();
 
-	double starCoreNum = 0;
+	__int128 starCoreNum = 0;
 	int times = 0, maxN = 0, maxM = 0;
-	keyvalueLLU<double> kv;
+	keyvalueLLU<__int128> kv;
 
 	while (leftN > 0)
 	{
 		times++;
-		double Min = 1e300;
-		kv = popminLLU<double>(heap);
+		//__int128 Min = 1e300;
+		kv = popminLLU<__int128>(heap);
 
 		if (kv.value >= LB)
 		{
@@ -229,7 +229,7 @@ void ColorfulStarCore(Graph& g, double** dp, int h, int* color, int** CC, double
 				MustColor[p] = NotColor[p - 1] * CC[nbr][color[i]];
 				dp[nbr][p] = NotColor[p] + MustColor[p];
 			}
-			updateLLU<double>(heap, nbr, dp[nbr][h - 1]);
+			updateLLU<__int128>(heap, nbr, dp[nbr][h - 1]);
 		}
 		g.deg[i] = 0;
 

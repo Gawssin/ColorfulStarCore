@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 
 	Graph g;
 	int h = atoi(argv1);
-	
+
 	cout << "Reading edgelist from file " << argv2 << endl;
 	cout << "h = " << h << endl;
 	g.readedgelist(argv2);
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 
 	for (int i = 0; i < g.n; i++)
 	{
-		if (g.coreNum[i] < largeCliqueSize - 1) 
+		if (g.coreNum[i] < largeCliqueSize - 1)
 		{
 			delArr[delNum++] = i;
 			delDeg += g.deg[i];
@@ -68,15 +68,15 @@ int main(int argc, char** argv)
 	int colorNum = g.color(color);
 	printf("colorNum = %d\n", colorNum);
 
-	double** dp = new double* [g.n];
+	__int128** dp = new __int128* [g.n];
 	int** CC = new int* [g.n];
 	initColStarDegree(g, dp, h, colorNum, color, CC, 0);
 
 	delNum = 0, delEdges = 0;;
 	long long LB = combination(largeCliqueSize - 1, h - 1);
-	ColorfulStarCore(g, dp, h, color, CC, (double)LB, delNum, delEdges);
-	
-	printf("\nGet ColorfulStar core\nDeleted Nodes:\t%d\nDeleted Edges:\t%d\nLeft Nodes:\t%d\nLeft Edges:\t%d\n\n", 
+	ColorfulStarCore(g, dp, h, color, CC, (__int128)LB, delNum, delEdges);
+
+	printf("\nGet ColorfulStar core\nDeleted Nodes:\t%d\nDeleted Edges:\t%d\nLeft Nodes:\t%d\nLeft Edges:\t%d\n\n",
 		delNum, delEdges, g.n - delNum, g.e - delWEdges - delEdges);
 
 	//printf("Get ColorfulStar core, N: %d, M: %d\n", g.n - delNum, g.e - delWEdges - delEdges);

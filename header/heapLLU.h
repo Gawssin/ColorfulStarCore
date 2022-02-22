@@ -40,7 +40,7 @@ inline void swapLLU(bheapLLU<T>* heap, int i, int j)
 	heap->kv[j] = kv_tmp;
 }
 template<class T>
-inline void bubble_upLLU(bheapLLU<T> * heap, int i)
+inline void bubble_upLLU(bheapLLU<T>* heap, int i)
 {
 	int j = (i - 1) / 2;
 	while (i > 0)
@@ -56,7 +56,7 @@ inline void bubble_upLLU(bheapLLU<T> * heap, int i)
 }
 
 template<class T>
-inline void bubble_downLLU(bheapLLU<T> * heap)
+inline void bubble_downLLU(bheapLLU<T>* heap)
 {
 	int i = 0, j1 = 1, j2 = 2, j;
 	while (j1 < heap->n)
@@ -75,7 +75,7 @@ inline void bubble_downLLU(bheapLLU<T> * heap)
 }
 
 template<class T>
-inline void insertLLU(bheapLLU<T> * heap, keyvalueLLU<T> kv)
+inline void insertLLU(bheapLLU<T>* heap, keyvalueLLU<T> kv)
 {
 	heap->pt[kv.key] = (heap->n)++;
 	heap->kv[heap->n - 1] = kv;
@@ -83,7 +83,7 @@ inline void insertLLU(bheapLLU<T> * heap, keyvalueLLU<T> kv)
 }
 
 template<class T>
-inline void updateLLU(bheapLLU<T> * heap, int key, T delta) 
+inline void updateLLU(bheapLLU<T>* heap, int key, T delta)
 {
 	int i = heap->pt[key];
 	if (i != -1) {
@@ -92,7 +92,7 @@ inline void updateLLU(bheapLLU<T> * heap, int key, T delta)
 	}
 }
 template<class T>
-inline keyvalueLLU<T> popminLLU(bheapLLU<T> * heap)
+inline keyvalueLLU<T> popminLLU(bheapLLU<T>* heap)
 {
 	keyvalueLLU<T> min = heap->kv[0];
 	heap->pt[min.key] = -1;
@@ -115,7 +115,7 @@ bheapLLU<T>* mkheapLLU(int n, T* nck)
 {
 	keyvalueLLU<T> kv;
 	bheapLLU<T>* heap = constructLLU<T>(n);
-	for (int i = 0; i < n; i++) 
+	for (int i = 0; i < n; i++)
 	{
 		kv.key = i;
 		kv.value = nck[i];
@@ -124,7 +124,7 @@ bheapLLU<T>* mkheapLLU(int n, T* nck)
 	return heap;
 }
 template<class T>
-void freeheapLLU(bheapLLU<T> * heap)
+void freeheapLLU(bheapLLU<T>* heap)
 {
 	delete[] heap->pt;
 	delete[] heap->kv;
