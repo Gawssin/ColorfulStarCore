@@ -6,6 +6,15 @@ class keyvalueLLU
 public:
 	int key;
 	T value;
+	keyvalueLLU& operator = (const keyvalueLLU& kv)
+	{
+		// if (*this == kv)
+		//     return *this;
+		this->key = kv.key;
+		T tmp = kv.value;
+		this->value = tmp;
+		return *this;
+	}
 };
 
 template<class T>

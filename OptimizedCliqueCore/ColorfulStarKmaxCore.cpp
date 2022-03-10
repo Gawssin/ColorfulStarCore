@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <time.h>
 #include <cstdarg>
+#include <unordered_map>
 #include "../header/heapLLU.h"
 #include "../header/Graph.hpp"
 #include "../header/tool.hpp"
@@ -54,6 +55,9 @@ int main(int argc, char** argv)
 	__int128* ColofulStarCoreNum = new __int128[g.n];
 	ColorfulStarCoreDecomp(g, dp, h, color, CC, ColofulStarCoreNum, colorNum, 0, &maxCore, &maxCoreNum);
 
+	auto t3 = getTime();
+	printf("Colorful Star Core Decomposition Finished. Time = %lfs\n", ((double)timeGap(t1, t3)) / 1e6);
+
 	int* maxCoreNodes = new int[maxCoreNum];
 	maxCoreNum = 0;
 	for (int i = 0; i < g.n; i++)
@@ -85,8 +89,6 @@ int main(int argc, char** argv)
 	}
 
 	auto t5 = getTime();
-
 	printf("- Overall time = %lfs\n", ((double)timeGap(t1, t5)) / 1e6);
-
 	return 0;
 }

@@ -8,11 +8,11 @@ public:
 	int t;
 };
 
-class iddeg
+class idW
 {
 public:
 	int id;
-	int degree;
+	int weight;
 };
 
 inline int max3(int a, int b, int c) {
@@ -26,9 +26,9 @@ bool cmp(const pair<int, int>& a, const pair<int, int>& b)
 		return a.first < b.first;
 	else return a.second > b.second;
 }
-bool IGCmp(const iddeg& a, const iddeg& b)
+bool IGCmp(const idW& a, const idW& b)
 {
-	return a.degree == b.degree ? (a.id > b.id) : (a.degree > b.degree);
+	return a.weight == b.weight ? (a.id > b.id) : (a.weight > b.weight);
 }
 
 
@@ -92,7 +92,8 @@ public:
 	bool isEdge(int, int);
 	Graph& mksub(int, ...);
 	//Graph* mksubMark(int*, int, int*);
-	int color(int*);
+	int color(int*, int);
+	int Greedy_SD(int* color);
 	void kClique(int, long long*, long long*);
 	void kCliqueCount(int, long long*, int*, int*, int*, int*, int*, int**, int**, long long*, int);
 
@@ -473,33 +474,205 @@ Graph& Graph::mksub(int argCnt, ...)//(int *nodes, int NodeNum)//
 	return *sg;
 }
 
-int Graph::color(int* color)
+class SDNode
 {
-	iddeg* ig = new iddeg[n];
+public:
+	int adjColorsNum;
+	int adjUncolored;
+
+
+	SDNode() {};
+	SDNode(int c, int u) : adjColorsNum(c), adjUncolored(u) {};
+
+	~SDNode() {};
+
+	bool operator < (SDNode& sdn)
+	{
+		if (this->adjColorsNum > sdn.adjColorsNum)      //here using ">" rather than "<" cause we only build Min-heap in heapLLU.h
+			return true;
+		if (this->adjColorsNum == sdn.adjColorsNum && this->adjUncolored > sdn.adjUncolored)
+			return true;
+		return false;
+	}
+	bool operator > (SDNode& sdn)
+	{
+		return !(*this < sdn);
+	}
+	bool operator == (const SDNode& sdn)
+	{
+		return this->adjColorsNum == sdn.adjColorsNum
+			&& this->adjUncolored == sdn.adjUncolored;
+	}
+	SDNode& operator = (SDNode& sdn)
+	{
+		if (*this == sdn)
+			return *this;
+
+		this->adjColorsNum = sdn.adjColorsNum;
+		this->adjUncolored = sdn.adjUncolored;
+		return *this;
+	}
+
+};
+
+
+int Graph::Greedy_SD(int* color)
+{
+	memset(color, -1, sizeof(int) * n);
+	SDNode* nodes = new SDNode[n];
 	for (int i = 0; i < n; i++)
 	{
-		ig[i].id = i;
-		ig[i].degree = deg[i];
+		nodes[i].adjColorsNum = 0;
+		nodes[i].adjUncolored = deg[i];
+	}
+	bheapLLU<SDNode>* SDHeap = mkheapLLU<SDNode>(n, nodes);
+	//bool* nodeFlag = new bool[n]();
+
+	int leftNodes = n;
+	keyvalueLLU<SDNode> kv, kvNew;
+
+
+	bool* C = new bool[maxDeg + 1]();
+
+
+	int nodeID, nbrID, nnbrID;
+	int colorNum = 1;
+
+	while (leftNodes > 0)
+	{
+		kv = popminLLU<SDNode>(SDHeap);
+		nodeID = kv.key;
+
+		for (int i = cd[nodeID]; i < cd[nodeID] + deg[nodeID]; i++)
+		{
+			nbrID = adj[i];
+			if (color[nbrID] != -1)
+				C[color[nbrID]] = 1;
+		}
+		for (int i = 0; i < maxDeg + 1; i++)
+			if (C[i] == 0)
+			{
+				color[nodeID] = i;
+				colorNum = i > colorNum ? i : colorNum;
+				break;
+			}
+
+		for (int i = cd[nodeID]; i < cd[nodeID] + deg[nodeID]; i++)
+		{
+			nbrID = adj[i];
+			if (color[nbrID] != -1)
+				C[color[nbrID]] = 0;
+		}
+
+
+		//nodeFlag[nodeID] = 1;
+
+
+		int nbrColorNum;
+		for (int i = cd[nodeID]; i < cd[nodeID] + deg[nodeID]; i++)
+		{
+			nbrID = adj[i];
+			nbrColorNum = 0;
+			if (color[nbrID] == -1)  //uncolored
+			{
+				for (int j = cd[nbrID]; j < cd[nbrID] + deg[nbrID]; j++)
+				{
+					nnbrID = adj[j];
+
+					if (color[nnbrID] != -1 && C[color[nnbrID]] == 0)
+					{
+						C[color[nnbrID]] = 1;
+						nbrColorNum++;
+					}
+
+				}
+				// kvNew.key = nbrID;
+				// kvNew.value.adjColorsNum = nbrColorNum;
+				// kvNew.value.adjUncolored = kv.value.adjUncolored - 1;
+
+				updateLLU(SDHeap, nbrID, SDNode(nbrColorNum, kv.value.adjUncolored - 1));
+
+				for (int j = cd[nbrID]; j < cd[nbrID] + deg[nbrID]; j++)
+				{
+					nnbrID = adj[j];
+					if (color[nnbrID] != -1)
+						C[color[nnbrID]] = 0;
+				}
+
+			}
+
+		}
+
+		leftNodes--;
+	}
+	cout << "------------------------" << endl;
+
+	return colorNum + 1;
+}
+
+
+
+int Graph::color(int* color, int colorAlgo = 0)
+{
+	cout << "colorAlgo: " << colorAlgo << endl;
+	if (colorAlgo == 3)     // Greedy SD coloring algorithm
+	{
+		return Greedy_SD(color);
+	}
+
+
+	idW* ig = new idW[n];
+
+	if (colorAlgo == 0)     // degree order
+	{
+		for (int i = 0; i < n; i++)
+		{
+			ig[i].id = i;
+			ig[i].weight = deg[i];
+		}
+	}
+
+	if (colorAlgo == 1)     // degeneracy order
+	{
+		if (coreNum == NULL)
+		{
+			coreDecomposition();
+		}
+
+		for (int i = 0; i < n; i++)
+		{
+			ig[i].id = i;
+			ig[i].weight = coreNum[i];
+		}
+	}
+
+	if (colorAlgo == 2)     // first fit order
+	{
+		for (int i = 0; i < n; i++)
+		{
+			ig[i].id = i;
+			ig[i].weight = i;
+		}
 	}
 
 	sort(ig, ig + n, IGCmp);
 
 	memset(color, -1, sizeof(int) * n);
-	int* C = new int[(ig[0].degree + 1)]();
+	int* C = new int[(maxDeg + 1)]();
 
 	color[ig[0].id] = 0;
 	int colorNum = 1;
 
 	for (int i = 1; i < n; i++)
 	{
-		int tmpDeg = ig[i].degree, tmpid = ig[i].id;
+		int tmpDeg = deg[ig[i].id], tmpid = ig[i].id;
 		for (int j = 0; j < tmpDeg; j++)
 		{
 			int now = adj[cd[tmpid] + j];
 			if (color[now] != -1)
 				C[color[now]] = 1;
 		}
-		for (int j = 0; j < ig[0].degree + 1; j++)
+		for (int j = 0; j < maxDeg + 1; j++)
 			if (C[j] == 0)
 			{
 				color[ig[i].id] = j;

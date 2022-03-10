@@ -238,3 +238,186 @@ void ColorfulStarCore(Graph& g, __int128** dp, int h, int* color, int** CC, __in
 	delete[] NotColor;
 	delete[] MustColor;
 }
+
+bool tryMid(Graph& g, int h, __int128 mid, __int128** dp, int* delArr, bool* changeFlag, int** CC, int& leftN, int* color)
+{
+	int delNum, nbrID;
+
+	while (leftN)
+	{
+		delNum = 0;
+
+		for (int i = 0; i < g.n; i++)
+		{
+			if (g.deg[i] > 0)
+			{
+				if (dp[i][h - 1] < mid)
+				{
+					delArr[delNum++] = i;
+					for (int j = g.cd[i]; j < g.cd[i] + g.deg[i]; j++)
+					{
+						nbrID = g.adj[j];
+						if (dp[nbrID][h - 1] >= mid)
+							changeFlag[nbrID] = true;
+					}
+
+				}
+			}
+		}
+
+		if (delNum == 0)
+		{
+			return true;
+		}
+
+		if (delNum == leftN)
+		{
+			return false;
+		}
+
+		leftN -= delNum;
+
+		g.deleteNodes(delArr, delNum);
+
+		int cnt = 0, less = 0;
+		for (int i = 0; i < g.n; i++)
+		{
+			if (g.deg[i] > 0)
+			{
+				cnt++;
+				if (g.deg[i] < 113)
+					less++;
+
+
+			}
+
+		}
+
+		for (int i = 0; i < g.n; i++)
+		{
+			if (changeFlag[i] == true)
+			{
+				changeFlag[i] = false;
+				if (g.deg[i] == 0)
+				{
+					leftN--;  //g.deg[i] is reduced to 0 due to g.deleteNodes(delArr, delNum);
+					continue;
+				}
+				int colorNum_i = 0;
+				for (int j = g.cd[i]; j < g.cd[i] + g.deg[i]; j++)
+				{
+					nbrID = g.adj[j];
+					CC[i][color[nbrID]]++;
+					colorNum_i = max(colorNum_i, color[nbrID]);
+				}
+
+				dp[i][0] = 1;
+				memset(&dp[i][1], 0, (h - 1) * sizeof(__int128));
+				for (int c = 0; c <= colorNum_i; c++)
+				{
+					for (int j = h - 1; j > 0; j--)
+						dp[i][j] = dp[i][j] + dp[i][j - 1] * CC[i][c];
+
+					CC[i][c] = 0;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+__int128 BinaryMaxCore(Graph& g, int h, __int128 lowerBound, __int128 upperBound, int** CC, __int128** dp, int* color)
+{
+
+	int* degBak = new int[g.n];
+	memcpy(degBak, g.deg, g.n * sizeof(int));
+
+	int* delArr = new int[g.n];
+	bool* changeFlag = new bool[g.n]();
+	__int128* dpBak = new __int128[g.n];
+	int deg0 = 0;
+	for (int i = 0; i < g.n; i++)
+	{
+		dpBak[i] = dp[i][h - 1];
+		if (g.deg[i] == 0) deg0++;
+	}
+
+	int leftN = g.n - deg0, leftNbak = g.n;
+
+	int times = 10;
+	__int128 mid, tryValue = 100000;
+
+
+	while (true)
+	{
+		bool result = tryMid(g, h, tryValue, dp, delArr, changeFlag, CC, leftN, color);
+
+		if (result == false)
+		{
+			leftN = leftNbak;
+			upperBound = mid;
+
+			for (int i = 0; i < g.n; i++)
+			{
+				if (degBak[i] > 0)
+				{
+					g.deg[i] = degBak[i];
+					dp[i][h - 1] = dpBak[i];
+				}
+			}
+			upperBound = tryValue;
+			break;
+		}
+		else
+		{
+			leftNbak = leftN;
+			lowerBound = mid;
+			for (int i = 0; i < g.n; i++)
+			{
+				if (degBak[i] > 0)
+				{
+					degBak[i] = g.deg[i];
+					dpBak[i] = dp[i][h - 1];
+				}
+			}
+			lowerBound = tryValue;
+			tryValue *= times;
+		}
+		printf("lowerBound: %s\t upperBound: %s\n", _int128_to_str(lowerBound), _int128_to_str(upperBound));
+	}
+
+	while (lowerBound + 1 < upperBound)
+	{
+		mid = (lowerBound + upperBound) / 2;
+		bool result = tryMid(g, h, mid, dp, delArr, changeFlag, CC, leftN, color);
+		if (result == false)
+		{
+			leftN = leftNbak;
+			upperBound = mid;
+			for (int i = 0; i < g.n; i++)
+			{
+				if (degBak[i] > 0)
+				{
+					g.deg[i] = degBak[i];
+					dp[i][h - 1] = dpBak[i];
+				}
+			}
+		}
+		else
+		{
+			leftNbak = leftN;
+			lowerBound = mid;
+			for (int i = 0; i < g.n; i++)
+			{
+				if (degBak[i] > 0)
+				{
+					degBak[i] = g.deg[i];
+					dpBak[i] = dp[i][h - 1];
+				}
+			}
+		}
+		printf("mid: %s\tresult: %d\tleftN: %d\n", _int128_to_str(mid), result, leftN);
+	}
+	printf("leftN: %d\tlowerBound: %s\n", leftN, _int128_to_str(lowerBound));
+	return lowerBound;
+}

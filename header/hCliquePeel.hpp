@@ -1,4 +1,4 @@
-void hCliquePeeling(Graph& g, int h)
+void hCliquePeeling(Graph& g, int h, long long* hcliqueCoreNum = NULL)
 {
 	int* GNodes = new int[g.n];
 	for (int i = 0; i < g.n; i++) GNodes[i] = i;
@@ -50,6 +50,7 @@ void hCliquePeeling(Graph& g, int h)
 		}
 
 		maxCliDeg = max(maxCliDeg, cliqueDeg);
+		if (hcliqueCoreNum != NULL) hcliqueCoreNum[kv.key] = maxCliDeg;
 
 		if (cliqueDensity < curCliqueDensity)
 		{
@@ -89,5 +90,5 @@ void hCliquePeeling(Graph& g, int h)
 	printf("Nodes:\t\t%d\nEdges:\t\t%d\nClique-Density:\t%lf\n\n\n", maxCliDenN, maxCliDenM, cliqueDensity);
 
 	printf("H-clique Kmax core\n");
-	printf("Nodes:\t\t%d\nEdges:\t\t%d\nClique-Density:\t%lf\nKmax:\t\t%d\n\n", maxCliCoreDenN, maxCliCoreDenM, cliqueCoreDen, maxCliDeg);
+	printf("Nodes:\t\t%d\nEdges:\t\t%d\nKmax:\t\t%d\nClique-Density:\t%lf\n\n", maxCliCoreDenN, maxCliCoreDenM, maxCliDeg, cliqueCoreDen);
 }

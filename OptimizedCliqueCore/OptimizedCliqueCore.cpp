@@ -49,7 +49,6 @@ int main(int argc, char** argv)
 	}
 	printf("maxCore: %d\n", maxCore);
 
-
 	int* delArr = new int[g.n], delNum = 0, delEdges = 0, delDeg = 0;
 	int interEdges;	//the number of edges connecting u, v which both are in delArr.
 
@@ -79,16 +78,12 @@ int main(int argc, char** argv)
 	printf("\nGet ColorfulStar core\nDeleted Nodes:\t%d\nDeleted Edges:\t%d\nLeft Nodes:\t%d\nLeft Edges:\t%d\n\n",
 		delNum, delEdges, g.n - delNum, g.e - delWEdges - delEdges);
 
-	//printf("Get ColorfulStar core, N: %d, M: %d\n", g.n - delNum, g.e - delWEdges - delEdges);
-
 	auto reductionTime = getTime();
 	printf("- Reduction time = %lfs\n", ((double)timeGap(t1, reductionTime)) / 1e6);
 
 	hCliquePeeling(g, h);
 
 	auto tClique = getTime();
-
 	printf("- Overall time = %lfs\n", ((double)timeGap(t1, tClique)) / 1e6);
-
 	return 0;
 }
