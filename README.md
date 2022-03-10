@@ -95,12 +95,12 @@ $ ./HStarMPP h filepath alg
 | **HStarMPP** | executable file |
 | **h** | the size of stars |
 | **filepath** | input file path |
-| **alg** | "MaxCore" for computing the colorful h-star Kmax core and its h-clique density; "MaxCorePeel" for running the peeling algorithm on the colorful h-star Kmax core |
+| **alg** | "MaxCore" for computing the colorful h-star Kmax core and its h-clique density; <br> "MaxCorePeel" for running the peeling algorithm on the colorful h-star Kmax core. |
 
 
 
 ### 3.3 Binary search for the colorful h-star Kmax core (**HStarMB**)
-> compute the the colorful h-star Kmax core directly using binary search method, return Kmax and the Kmax core
+> compute the the colorful h-star Kmax core directly using binary search method, return the Kmax and the Kmax core
 
 ### To compile
 ```
