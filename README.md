@@ -1,7 +1,8 @@
 # ColorfulStarCore
 
-> Source code for the Paper: ""
+> Source code for the Paper: "Colorful *h*-star Core Decomposition"
 
+> The default graph coloring algorithm: **Degree**
 
 ## Structure
 - **The Colorful h-star Core Decomposition**
@@ -22,7 +23,7 @@ $ g++ -O3 -o HStar ColorfulStarCoreDecomposition.cpp
 
 ### To run
 ```
-$ ./HStar h filepath [basic]
+$ ./HStar h filepath colorAlgo [basic]
 ```
 
 | arguments  | Description |
@@ -30,7 +31,8 @@ $ ./HStar h filepath [basic]
 | **HStar** | executable file |
 | **h** | the size of stars |
 | **filepath** | input file path |
-| **[basic]** | *Optional*, indicate which algorithm will be performed. "basic" for the basic version **HStarDP**, i.e. recomputing the colorful h-star degree when a neighbor is removed. Default for the advanced version **HStarCD**, i.e. using the proposed updating technique to calculate the colorful h-star degree |
+| **colorAlgo** | graph coloring algorithm: <br>"0" for **Degree**; <br>"1" for **Degen**; <br>"2" for **FF**; <br>"3" for **SD**. |
+| **[basic]** | *Optional*, indicate which algorithm will be performed. <br>"basic" for the basic version **HStarDP**, i.e. recomputing the colorful h-star degree when a neighbor is removed; <br>the default is the advanced version **HStarCD**, i.e. using the proposed updating technique to calculate the colorful h-star degree. |
 
 
 ## 2. hCliquePeel
@@ -54,22 +56,22 @@ $ ./hCliquePeel h filepath
 
 ## 3. OptimizedCliqueCore
 
-### 3.1 The colorful h-star core based algorithm
+### 3.1 The colorful h-star core based algorithm (**HStarPP**)
 > using the colorful h-star θ core as a reduction, and performing the **CoreApp** algorithm or the peeling algorithm on the reduced subgraph.
 ### To compile
 ```
 $ cd ./OptimizedCliqueCore/
-$ g++ -O3 -o OptimizedCliqueCore OptimizedCliqueCore.cpp
+$ g++ -O3 -o HStarPP OptimizedCliqueCore.cpp
 ```
 
 ### To run
 ```
-$ ./OptimizedCliqueCore h filepath
+$ ./HStarPP h filepath
 ```
 
 | arguments  | Description |
 | :-----| :---- |
-| **OptimizedCliqueCore** | executable file |
+| **HStarPP** | executable file |
 | **h** | the size of stars |
 | **filepath** | input file path |
 
@@ -80,20 +82,41 @@ $ ./OptimizedCliqueCore h filepath
 ### To compile
 ```
 $ cd ./OptimizedCliqueCore/
-$ g++ -O3 -o ColorfulStarKmaxCore ColorfulStarKmaxCore.cpp
+$ g++ -O3 -o HStarMPP ColorfulStarKmaxCore.cpp
 ```
 
 ### To run
 ```
-$ ./ColorfulStarKmaxCore h filepath alg
+$ ./HStarMPP h filepath alg
 ```
 
 | arguments  | Description |
 | :-----| :---- |
-| **OptimizedCliqueCore** | executable file |
+| **HStarMPP** | executable file |
 | **h** | the size of stars |
 | **filepath** | input file path |
 | **alg** | "MaxCore" for computing the colorful h-star Kmax core and its h-clique density; "MaxCorePeel" for running the peeling algorithm on the colorful h-star Kmax core |
 
+
+
+### 3.3 Binary search for the colorful h-star Kmax core (**HStarMB**)
+> compute the the colorful h-star Kmax core directly using binary search method, return Kmax and the Kmax core
+
+### To compile
+```
+$ cd ./OptimizedCliqueCore/
+$ g++ -O3 -o HStarMB ColorfulStarKmaxCore-BS.cpp
+```
+
+### To run
+```
+$ ./HStarMB h filepath
+```
+
+| arguments  | Description |
+| :-----| :---- |
+| **HStarMB** | executable file |
+| **h** | the size of stars |
+| **filepath** | input file path |
 
 
